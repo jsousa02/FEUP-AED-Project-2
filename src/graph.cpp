@@ -70,6 +70,17 @@ string Graph::Node::getZone() {
     return this->zone;
 }
 
+ostream& operator<<(ostream &out, Graph graph) {
+    for(int i = 0; i < graph.nodes.size(); i++) {
+        cout << "Name = " << graph.nodes.at(i).getName() << endl;
+        cout << "Code = " << graph.nodes.at(i).getCode() << endl;
+        cout << "Zone = " << graph.nodes.at(i).getZone() << endl;
+        cout << "Latitude = " << graph.nodes.at(i).getLatitude() << endl;
+        cout << "Longitude = " << graph.nodes.at(i).getLongitude() << endl;
+        cout << "-----------------------------------------------" << endl;
+    }
+}
+
 void Graph::dijkstra(int s) {
     MinHeap<int, int>q(n, -1);
 

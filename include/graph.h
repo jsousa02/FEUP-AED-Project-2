@@ -50,14 +50,12 @@ class Graph {
 public:
     // Constructor: nr nodes and direction (default: undirected)
     Graph(int nodes, bool dir = false);
-
     // Add edge from source to destination with a certain weight
     void addEdge(int src, int dest, int weight = 1);
-
     vector<Node> nodes;
-    // ----- Functions to implement in this class -----
     int dijkstra_distance(int a, int b);
     list<int> dijkstra_path(int a, int b);
+    friend ostream& operator<<(ostream& out, Graph graph);
 };
 
 #endif

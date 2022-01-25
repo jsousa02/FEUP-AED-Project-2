@@ -16,6 +16,9 @@ int main() {
     Graph nightLines(415, false);
     dayLines = parseDayLines(dayLines);
     nightLines = parseNightLines(nightLines);
+
+    cout << nightLines << endl;
+
     return 0;
 }
 
@@ -70,6 +73,8 @@ Graph parseDayLines(Graph &graph) {
 
                             if(pos != stoi(numOfStops) - 1) // -1 to not make a connection between 2 different lines
                                 graph.addEdge(k, k + 1); // create connections between stops in the same line
+
+                            graph.nodes.at(numOfLines).setCode(stopLine);
 
                             for(int j = 0; j < 4; j++) { // 4 loops to get different information in each
                                 getline(stream, stopLine, ',');
@@ -126,6 +131,8 @@ Graph parseNightLines(Graph &graph) {
 
                             if(pos != stoi(numOfStops) - 1) // -1 to not make a connection between 2 different lines
                                 graph.addEdge(k, k + 1); // create connections between stops in the same line
+
+                            graph.nodes.at(numOfLines).setCode(stopLine);
 
                             for(int j = 0; j < 4; j++) { // 4 loops to get different information in each
                                 getline(stream, stopLine, ',');
