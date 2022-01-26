@@ -11,10 +11,14 @@ using namespace std;
 Graph parseDayLines();
 Graph parseNightLines();
 map<string, int> mapStopToInt();
+double haversine(double lat1, double long1, double lat2, double long2);
 
 int main() {
+    map<string, int> stops = mapStopToInt();
     Graph dayLines = parseDayLines();
     Graph nightLines = parseNightLines();
+    double dist = dayLines.dijkstra_distance(stops["INF1"], stops["ALFG1"]);
+    cout << dist << endl;
     cout << "done\n";
     return 0;
 }
@@ -49,7 +53,8 @@ Graph parseDayLines() {
     Graph dayLines(2500, true);
     vector<string> stopCodes;
     ifstream linesFile("./dataset/lines.csv");
-    string line, firstLine, lineCode, numOfStops, stopCode;
+    string line, firstLine, lineCode, numOfStops, stopCode, stop;
+    double lat1, lat2, lon1, lon2;
 
     getline(linesFile, firstLine); // skip first line
 
@@ -57,10 +62,10 @@ Graph parseDayLines() {
         stringstream ss(line);
         while(getline(ss, line, ',')) {
             for(int i = 0; i < 2; i++) {
-                if(i == 0)
+                if(i == 0) // only get the line code
                     lineCode = line;
             }
-            if(lineCode.find("M") == string::npos) {
+            if(lineCode.find("M") == string::npos) { // M is not found in the line code
                 ifstream dayFile("./dataset/line_" + lineCode + "_0.csv");
                 getline(dayFile, numOfStops); // get number of stops
 
@@ -69,7 +74,33 @@ Graph parseDayLines() {
                     stopCodes.push_back(stopCode);
                 }
                 for(int j = 0; j < stopCodes.size() - 1; j++) {
-                    dayLines.addEdge(stops[stopCodes.at(j)], stops[stopCodes.at(j + 1)], lineCode);
+                    ifstream stopsFile("./dataset/stops.csv");
+                    getline(stopsFile, stop); // skip first line
+
+                    while(getline(stopsFile, stop)) {
+                        stringstream ss(stop);
+                        while(getline(ss, stop, ',')) {
+                            if(stop == stopCodes.at(j)) {
+                                for(int l = 0; l < 4; l++) {
+                                    getline(ss, stop, ',');
+                                    if(l == 2) {
+                                        lat1 = stod(stop);
+                                    } else if (l == 3)
+                                        lon1 = stod(stop);
+                                }
+                            }
+                            if(stop == stopCodes.at(j + 1)) {
+                                for(int l = 0; l < 4; l++) {
+                                    getline(ss, stop, ',');
+                                    if(l == 2) {
+                                        lat2 = stod(stop);
+                                    } else if (l == 3)
+                                        lon2 = stod(stop);
+                                }
+                            }
+                        }
+                    }
+                    dayLines.addEdge(stops[stopCodes.at(j)], stops[stopCodes.at(j + 1)], lineCode, haversine(lat1, lon1, lat2, lon2));
                 }
 
                 ifstream dayFile1("./dataset/line_" + lineCode + "_1.csv");
@@ -83,7 +114,33 @@ Graph parseDayLines() {
                     stopCodes.push_back(stopCode);
                 }
                 for(int k = 0; k < stopCodes.size() - 1; k++) {
-                    dayLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode);
+                    ifstream stopsFile("./dataset/stops.csv");
+                    getline(stopsFile, stop); // skip first line
+
+                    while(getline(stopsFile, stop)) {
+                        stringstream ss(stop);
+                        while(getline(ss, stop, ',')) {
+                            if(stop == stopCodes.at(k)) {
+                                for(int l = 0; l < 4; l++) {
+                                    getline(ss, stop, ',');
+                                    if(l == 2) {
+                                        lat1 = stod(stop);
+                                    } else if (l == 3)
+                                        lon1 = stod(stop);
+                                }
+                            }
+                            if(stop == stopCodes.at(k + 1)) {
+                                for(int l = 0; l < 4; l++) {
+                                    getline(ss, stop, ',');
+                                    if(l == 2) {
+                                        lat2 = stod(stop);
+                                    } else if (l == 3)
+                                        lon2 = stod(stop);
+                                }
+                            }
+                        }
+                    }
+                    dayLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode, haversine(lat1, lon1, lat2, lon2));
                 }
             }
         }

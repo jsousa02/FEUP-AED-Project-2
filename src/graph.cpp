@@ -17,8 +17,8 @@ void Graph::addEdge(int src, int dest, string line, double weight) {
 void Graph::dijkstra(int s) {
     MinHeap<int, int>q(n, -1);
 
-    for(int v = 0; v < n; v++) {
-        nodes.at(v).dist = INT_MAX;
+    for(int v = 1; v <= n; v++) {
+        nodes.at(v).dist = INT_MAX / 2;
         q.insert(v, nodes.at(v).dist);
         nodes.at(v).visited = false;
     }
@@ -32,7 +32,7 @@ void Graph::dijkstra(int s) {
 
         for(auto e : nodes.at(u).adj) {
             int v = e.dest;
-            int w = e.weight;
+            double w = e.weight;
 
             if(!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
                 nodes.at(v).dist = nodes.at(u).dist + w;
@@ -49,7 +49,7 @@ void Graph::dijkstra(int s) {
 // ..............................
 // a) Distância entre dois nós
 // TODO
-int Graph::dijkstra_distance(int a, int b) {
+double Graph::dijkstra_distance(int a, int b) {
     dijkstra(a);
     if(nodes.at(b).dist == INT_MAX) return -1;
     return nodes.at(b).dist;
