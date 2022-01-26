@@ -12,13 +12,19 @@ Graph parseDayLines();
 Graph parseNightLines();
 map<string, int> mapStopToInt();
 double haversine(double lat1, double long1, double lat2, double long2);
+vector<string> findClosestStop(double lat, double lon, double dist);
 
 int main() {
     map<string, int> stops = mapStopToInt();
-    Graph dayLines = parseDayLines();
-    Graph nightLines = parseNightLines();
-    double dist = dayLines.dijkstra_distance(stops["INF1"], stops["ALFG1"]);
-    cout << dist << endl;
+    //Graph dayLines = parseDayLines();
+    //Graph nightLines = parseNightLines();
+    //double dist = dayLines.dijkstra_distance(stops["INF1"], stops["ALFG1"]);
+    //cout << dist << endl;
+
+    vector<string> nearbyStops = findClosestStop(41.14969203, -8.611312751, 0.1);
+    for(auto i: nearbyStops)
+        cout << i << endl;
+
     cout << "done\n";
     return 0;
 }
@@ -231,4 +237,35 @@ pair<int, int> countDayAndNightLines() {
             night++;
     }
     return pair<int, int>(day, night);
+}
+
+vector<string> findClosestStop(double lat, double lon, double dist) {
+    ifstream stopsFile("./dataset/stops.csv");
+
+    string firstLine, line, stopCode, stopName;
+    int count = 0;
+    double lat2, lon2, distance;
+    vector<string> closestStops;
+
+    getline(stopsFile, firstLine);
+
+    while(getline(stopsFile, line)) {
+        stringstream ss(line);
+        while(getline(ss, line, ',')) {
+            if(count == 0)
+                stopCode = line;
+            else if(count == 1)
+                stopName = line;
+            else if(count == 3)
+                lat2 = stod(line);
+            else if(count == 4)
+                lon2 = stod(line);
+            count++;
+        }
+        count = 0;
+        distance = haversine(lat, lon, lat2, lon2);
+        if(distance <= dist)
+            closestStops.push_back(stopCode);
+    }
+    return closestStops;
 }
