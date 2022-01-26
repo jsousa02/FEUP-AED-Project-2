@@ -1,25 +1,159 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cmath>
+#include <map>
 
 #include "./include/graph.h"
 
 using namespace std;
 
-pair<int, int> countDayAndNightLines();
-Graph parseDayLines(Graph &graph);
-Graph parseNightLines(Graph &graph);
+Graph parseDayLines();
+Graph parseNightLines();
+map<string, int> mapStopToInt();
 
 int main() {
-    pair<int, int> n = countDayAndNightLines();
-    Graph dayLines(2500, false);
-    Graph nightLines(415, false);
-    dayLines = parseDayLines(dayLines);
-    nightLines = parseNightLines(nightLines);
-
-    cout << nightLines << endl;
-
+    Graph dayLines = parseDayLines();
+    Graph nightLines = parseNightLines();
+    cout << "done\n";
     return 0;
+}
+
+map<string, int> mapStopToInt() {
+    ifstream stopsFile("./dataset/stops.csv");
+
+    string line, firstLine;
+    map<string, int> stops;
+    int pos = 1;
+
+    getline(stopsFile, firstLine);
+
+    while(getline(stopsFile, line)) {
+        stringstream ss(line);
+        while(getline(ss, line, ',')) {
+            for(int i = 0; i < 4; i++) {
+                if(i == 0) {
+                    stops.insert(pair<string,int>(line, pos));
+                    pos++;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    return stops;
+}
+
+Graph parseDayLines() {
+    map<string, int> stops = mapStopToInt();
+    Graph dayLines(2500, true);
+    vector<string> stopCodes;
+    ifstream linesFile("./dataset/lines.csv");
+    string line, firstLine, lineCode, numOfStops, stopCode;
+
+    getline(linesFile, firstLine); // skip first line
+
+    while(getline(linesFile, line)) {
+        stringstream ss(line);
+        while(getline(ss, line, ',')) {
+            for(int i = 0; i < 2; i++) {
+                if(i == 0)
+                    lineCode = line;
+            }
+            if(lineCode.find("M") == string::npos) {
+                ifstream dayFile("./dataset/line_" + lineCode + "_0.csv");
+                getline(dayFile, numOfStops); // get number of stops
+
+                for(int j = 0; j < stoi(numOfStops); j++) {
+                    getline(dayFile, stopCode);
+                    stopCodes.push_back(stopCode);
+                }
+                for(int j = 0; j < stopCodes.size() - 1; j++) {
+                    dayLines.addEdge(stops[stopCodes.at(j)], stops[stopCodes.at(j + 1)], lineCode);
+                }
+
+                ifstream dayFile1("./dataset/line_" + lineCode + "_1.csv");
+                getline(dayFile1, numOfStops); // get number of stops
+                if(numOfStops == "0")
+                    break;
+                stopCodes.clear();
+
+                for(int k = 0; k < stoi(numOfStops); k++) {
+                    getline(dayFile1, stopCode);
+                    stopCodes.push_back(stopCode);
+                }
+                for(int k = 0; k < stopCodes.size() - 1; k++) {
+                    dayLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode);
+                }
+            }
+        }
+    }
+    return dayLines;
+}
+
+Graph parseNightLines() {
+    map<string, int> stops = mapStopToInt();
+    Graph nightLines(415, true);
+    vector<string> stopCodes;
+    ifstream linesFile("./dataset/lines.csv");
+    string line, firstLine, lineCode, numOfStops, stopCode;
+
+    getline(linesFile, firstLine); // skip first line
+
+    while(getline(linesFile, line)) {
+        stringstream ss(line);
+        while(getline(ss, line, ',')) {
+            for(int i = 0; i < 2; i++) {
+                if(i == 0)
+                    lineCode = line;
+            }
+
+            if(lineCode.find("M") != string::npos) {
+
+                ifstream dayFile("./dataset/line_" + lineCode + "_0.csv");
+                getline(dayFile, numOfStops); // get number of stops
+
+                for(int j = 0; j < stoi(numOfStops); j++) {
+                    getline(dayFile, stopCode);
+                    stopCodes.push_back(stopCode);
+                }
+                for(int j = 0; j < stopCodes.size() - 1; j++) {
+                    nightLines.addEdge(stops[stopCodes.at(j)], stops[stopCodes.at(j + 1)], lineCode);
+                }
+
+                ifstream dayFile1("./dataset/line_" + lineCode + "_1.csv");
+                getline(dayFile1, numOfStops); // get number of stops
+                if(numOfStops == "0")
+                    break;
+                stopCodes.clear();
+
+                for(int k = 0; k < stoi(numOfStops); k++) {
+                    getline(dayFile1, stopCode);
+                    stopCodes.push_back(stopCode);
+                }
+                for(int k = 0; k < stopCodes.size() - 1; k++) {
+                    nightLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode);
+                }
+            }
+        }
+    }
+    return nightLines;
+}
+
+double haversine(double lat1, double long1, double lat2, double long2) {
+
+    double dLat = (lat2 - lat1) * M_PI / 180.0;
+    double dLon = (long2 - long1) * M_PI / 180.0;
+
+    // convert to radians
+    lat1 = (lat1) * M_PI / 180.0;
+    lat2 = (lat2) * M_PI / 180.0;
+
+    // formula
+    double a = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1) * cos(lat2);
+    double rad = 6371;
+    double c = 2 * asin(sqrt(a));
+    return rad * c;
 }
 
 pair<int, int> countDayAndNightLines() {
@@ -40,120 +174,4 @@ pair<int, int> countDayAndNightLines() {
             night++;
     }
     return pair<int, int>(day, night);
-}
-
-Graph parseDayLines(Graph &graph) {
-    ifstream linesFile("./dataset/lines.csv"); // info of the lines
-    string line, firstLine, aux, numOfStops, stopCode, stopLine;
-    int pos = 0, numOfLines = 0;
-
-    getline(linesFile, firstLine); // skip the first line
-
-    while(getline(linesFile, line)) {
-        stringstream ss(line);
-
-        for(int i = 0; i < 2; i++) { // first loop to get the code, second to get the line's name
-            getline(ss, line, ',');
-        
-            if(i == 0 && line.find('M') == string::npos) { // only lines that are available during the day
-                string filename = "./dataset/line_" + line + "_0.csv";
-                ifstream lineFile(filename); // file containing the stops of a line
-                getline(lineFile, numOfStops);
-
-                for(int k = 0; k < stoi(numOfStops); k++) { // for all the stops of a line
-
-                    getline(lineFile, stopCode);
-                    ifstream stops("./dataset/stops.csv"); // file containing info of all the stops
-
-                    while(getline(stops, stopLine)) {
-                        stringstream stream(stopLine);
-                        getline(stream, stopLine, ',');
-
-                        if(stopLine == stopCode) { // only want the info related to the stops of the current line
-
-                            if(pos != stoi(numOfStops) - 1) // -1 to not make a connection between 2 different lines
-                                graph.addEdge(k, k + 1); // create connections between stops in the same line
-
-                            graph.nodes.at(numOfLines).setCode(stopLine);
-
-                            for(int j = 0; j < 4; j++) { // 4 loops to get different information in each
-                                getline(stream, stopLine, ',');
-                                if(j == 0) // get the name of the stop
-                                    graph.nodes.at(numOfLines).setName(stopLine);
-                                else if(j == 1) // get the zone of the stop
-                                    graph.nodes.at(numOfLines).setZone(stopLine);
-                                else if(j == 2) // get the latitude of the stop
-                                    graph.nodes.at(numOfLines).setLatitude(stod(stopLine));
-                                else if(j == 3) // get the longitude of the stop
-                                    graph.nodes.at(numOfLines).setLongitude(stod(stopLine));
-                            }
-                            numOfLines++; // increase the number of lines checked
-                            break; // after we find the info of a stop in the file, we can exit the loop
-                        }
-                    }
-                }
-                pos = 0; // auxiliary variable to stop adding an edge between the last stop of a line
-                        // and the first stop of the next line, so needs to be reset after checking the stops of a line
-            }
-        }
-    }
-    return graph;
-}
-
-Graph parseNightLines(Graph &graph) {
-    ifstream linesFile("./dataset/lines.csv"); // info of the lines
-    string line, firstLine, aux, numOfStops, stopCode, stopLine;
-    int pos = 0, numOfLines = 0;
-
-    getline(linesFile, firstLine); // skip the first line
-
-    while(getline(linesFile, line)) {
-        stringstream ss(line);
-
-        for(int i = 0; i < 2; i++) { // first loop to get the code, second to get the line's name
-            getline(ss, line, ',');
-
-            if(i == 0 && line.find('M') != string::npos) { // only lines that are available during the day
-                string filename = "./dataset/line_" + line + "_0.csv";
-                ifstream lineFile(filename); // file containing the stops of a line
-                getline(lineFile, numOfStops);
-
-                for(int k = 0; k < stoi(numOfStops); k++) { // for all the stops of a line
-
-                    getline(lineFile, stopCode);
-                    ifstream stops("./dataset/stops.csv"); // file containing info of all the stops
-
-                    while(getline(stops, stopLine)) {
-                        stringstream stream(stopLine);
-                        getline(stream, stopLine, ',');
-
-                        if(stopLine == stopCode) { // only want the info related to the stops of the current line
-
-                            if(pos != stoi(numOfStops) - 1) // -1 to not make a connection between 2 different lines
-                                graph.addEdge(k, k + 1); // create connections between stops in the same line
-
-                            graph.nodes.at(numOfLines).setCode(stopLine);
-
-                            for(int j = 0; j < 4; j++) { // 4 loops to get different information in each
-                                getline(stream, stopLine, ',');
-                                if(j == 0) // get the name of the stop
-                                    graph.nodes.at(numOfLines).setName(stopLine);
-                                else if(j == 1) // get the zone of the stop
-                                    graph.nodes.at(numOfLines).setZone(stopLine);
-                                else if(j == 2) // get the latitude of the stop
-                                    graph.nodes.at(numOfLines).setLatitude(stod(stopLine));
-                                else if(j == 3) // get the longitude of the stop
-                                    graph.nodes.at(numOfLines).setLongitude(stod(stopLine));
-                            }
-                            numOfLines++; // increase the number of lines checked
-                            break; // after we find the info of a stop in the file, we can exit the loop
-                        }
-                    }
-                }
-                pos = 0; // auxiliary variable to stop adding an edge between the last stop of a line
-                // and the first stop of the next line, so needs to be reset after checking the stops of a line
-            }
-        }
-    }
-    return graph;
 }

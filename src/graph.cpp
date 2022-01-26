@@ -5,86 +5,19 @@
 #include <climits>
 
 // Constructor: nr nodes and direction (default: undirected)
-Graph::Graph(int num, bool dir) : n(num), hasDir(dir), nodes(num+1) {}
+Graph::Graph(int num, bool dir) : n(num), hasDir(dir), nodes(num + 1) {}
 
 // Add edge from source to destination with a certain weight
-void Graph::addEdge(int src, int dest, int weight) {
-    if (src<0 || src>n || dest<0 || dest>n) return;
-    nodes[src].adj.push_back({dest, weight});
-    if (!hasDir) nodes[dest].adj.push_back({src, weight});
-}
-
-void Graph::Node::setName(string name) {
-    this->name = name;
-}
-
-void Graph::Node::setCode(string code) {
-    this->code = code;
-}
-
-void Graph::Node::setDist(double dist) {
-    this->dist = dist;
-}
-
-void Graph::Node::setVisited(bool visited) {
-    this->visited = visited;
-}
-
-void Graph::Node::setLatitude(double latitude) {
-    this->latitude = latitude;
-}
-
-void Graph::Node::setLongitude(double longitude) {
-    this->longitude = longitude;
-}
-
-void Graph::Node::setZone(string zone) {
-    this->zone = zone;
-}
-
-double Graph::Node::getLatitude() {
-    return this->latitude;
-}
-
-double Graph::Node::getLongitude() {
-    return this->longitude;
-}
-
-double Graph::Node::getDist() {
-    return this->dist;
-}
-
-bool Graph::Node::isVisited() {
-    return this->visited;
-}
-
-string Graph::Node::getCode() {
-    return this->code;
-}
-
-string Graph::Node::getName() {
-    return this->name;
-}
-
-string Graph::Node::getZone() {
-    return this->zone;
-}
-
-ostream& operator<<(ostream &out, Graph graph) {
-    for(int i = 0; i < graph.nodes.size(); i++) {
-        cout << "Name = " << graph.nodes.at(i).getName() << endl;
-        cout << "Code = " << graph.nodes.at(i).getCode() << endl;
-        cout << "Zone = " << graph.nodes.at(i).getZone() << endl;
-        cout << "Latitude = " << graph.nodes.at(i).getLatitude() << endl;
-        cout << "Longitude = " << graph.nodes.at(i).getLongitude() << endl;
-        cout << "-----------------------------------------------" << endl;
-    }
+void Graph::addEdge(int src, int dest, string line, double weight) {
+    if (src<1 || src>n || dest<1 || dest>n) return;
+    nodes[src].adj.push_back({dest, weight, line});
+    if (!hasDir) nodes[dest].adj.push_back({src, weight, line});
 }
 
 void Graph::dijkstra(int s) {
     MinHeap<int, int>q(n, -1);
 
-    for(int v = 1; v <= n; v++) {
+    for(int v = 0; v < n; v++) {
         nodes.at(v).dist = INT_MAX;
         q.insert(v, nodes.at(v).dist);
         nodes.at(v).visited = false;
