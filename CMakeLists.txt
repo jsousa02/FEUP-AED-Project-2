@@ -9,7 +9,7 @@ add_executable(aed
         include/graph.h
         include/minHeap.h
         src/graph.cpp
-        main.cpp)
+        main.cpp include/parser.h src/parser.cpp)
 
 # Doxygen Build
 find_package(Doxygen)

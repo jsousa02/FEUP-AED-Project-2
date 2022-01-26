@@ -3,6 +3,7 @@
 
 #include "graph.h"
 #include <climits>
+#include <queue>
 
 // Constructor: nr nodes and direction (default: undirected)
 Graph::Graph(int num, bool dir) : n(num), hasDir(dir), nodes(num + 1) {}
@@ -61,4 +62,30 @@ double Graph::dijkstra_distance(int a, int b) {
 list<int> Graph::dijkstra_path(int a, int b) {
     list<int> path;
     return path;
+}
+
+void Graph::bfs(int v) {
+    queue<int> q;
+    q.push(v);
+    nodes.at(v).dist = 0;
+    nodes.at(v).visited = true;
+
+    while(!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for(auto e: nodes.at(u).adj) {
+            int w = e.dest;
+            if(!nodes.at(w).visited) {
+                q.push(w);
+                nodes.at(w).visited = true;
+                nodes.at(w).dist = nodes.at(u).dist + 1;
+            }
+        }
+    }
+}
+
+
+int Graph::bfs_distance(int a, int b) {
+    bfs(a);
+    return nodes.at(b).dist;
 }
