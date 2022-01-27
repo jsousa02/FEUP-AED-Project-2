@@ -6,10 +6,10 @@
 class Parser {
 private:
     double haversine(double lat1, double lon1, double lat2, double lon2);
-    map<string, int> mapStopToInt();
 
 public:
     Parser() {}
+    map<string, int> mapStopToInt();
     Graph parseDayLines();
     Graph parseNightLines();
     Graph parseDayLinesWithDistances();
