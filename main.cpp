@@ -8,37 +8,24 @@ using namespace std;
 
 int main() {
     Parser parser;
-    Graph dayLinesWithDistances = parser.parseDayLinesWithDistances();
-    Graph nightLinesWithDistances = parser.parseNightLinesWithDistances();
-    Graph dayLines = parser.parseDayLines();
+    Graph nightLinesWithDist(2500, true);
+    Graph dayLinesWithDist(2500, true);
     map<string, int> stops = parser.mapStopToInt();
+    vector<vector<string>> night1;
+    vector<vector<string>> night0;
+    vector<vector<string>> day1;
+    vector<vector<string>> day0;
 
-    cout << dayLines.bfs_distance(stops["INF1"], stops["PASS"]) << endl;
+    Graph dayLines = parser.parseDayLines();
+    Graph nightLines = parser.parseNightLines();
+    parser.parseNightLinesWithDistances(night0, night1);
+    parser.parseDayLinesWithDistances(day0, day1);
+    parser.addDistances(night0, nightLinesWithDist);
+    parser.addDistances(night1, nightLinesWithDist);
+    parser.addDistances(day0, dayLinesWithDist);
+    parser.addDistances(day1, dayLinesWithDist);
+
+    //cout << dayLines.bfs_distance(stops["INF1"], stops["PASS"]) << endl;
     cout << "done\n";
     return 0;
-}
-
-
-/**
- * @brief counts the number of lines available during the day and the number of lines available during the night
- * @return a pair containing the number of lines available, during the day and during the night
- */
-pair<int, int> countDayAndNightLines() {
-    ifstream file("./dataset/lines.csv");
-
-    int day = 0, night = 0;
-    string aux, code, name, firstLine;
-
-    getline(file, firstLine); // skip the first line
-
-    while(!file.eof()) {
-        getline(file, aux);
-        code = aux.substr(0, aux.find(','));
-
-        if(code.find('M') == string::npos)
-            day++;
-        else
-            night++;
-    }
-    return pair<int, int>(day, night);
 }

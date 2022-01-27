@@ -1,5 +1,3 @@
-#include <sstream>
-#include <fstream>
 #include <map>
 #include <cmath>
 
@@ -136,16 +134,13 @@ Graph Parser::parseDayLines() {
 }
 
 /**
- * @brief parses the night lines and sets the edges' weights as the distance between the stops
- * @return a graph in which each node is a stop
+ * @brief separates the stops of each line in vectors
  */
-Graph Parser::parseNightLinesWithDistances() {
+void Parser::parseDayLinesWithDistances(vector<vector<string>> &stopCodesByLine0, vector<vector<string>> &stopCodesByLine1) {
     map<string, int> stops = mapStopToInt();
-    Graph nightLines(415, true);
     vector<string> stopCodes;
     ifstream linesFile("./dataset/lines.csv");
     string line, firstLine, lineCode, numOfStops, stopCode, stop;
-    double lat1, lon1, lat2, lon2;
 
     getline(linesFile, firstLine); // skip first line
 
@@ -153,93 +148,141 @@ Graph Parser::parseNightLinesWithDistances() {
         stringstream ss(line);
         while(getline(ss, line, ',')) {
             for(int i = 0; i < 2; i++) {
-                if(i == 0)
+                if(i == 0) // only get the line code
                     lineCode = line;
             }
-
-            if(lineCode.find("M") != string::npos) {
-
+            if(lineCode.find("M") == string::npos) { // M is not found in the line code
                 ifstream dayFile("./dataset/line_" + lineCode + "_0.csv");
                 getline(dayFile, numOfStops); // get number of stops
+
+                stopCodes.push_back(lineCode);  // add line code to the beginning of the vector
 
                 for(int j = 0; j < stoi(numOfStops); j++) {
                     getline(dayFile, stopCode);
                     stopCodes.push_back(stopCode);
                 }
-                for(int j = 0; j < stopCodes.size() - 1; j++) {
-
-                    ifstream stopsFile("./dataset/stops.csv");
-                    getline(stopsFile, stop); // skip first line
-
-                    while(getline(stopsFile, stop)) {
-                        stringstream ss(stop);
-                        while(getline(ss, stop, ',')) {
-                            if(stop == stopCodes.at(j)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat1 = stod(stop);
-                                    } else if (l == 3)
-                                        lon1 = stod(stop);
-                                }
-                            }
-                            if(stop == stopCodes.at(j + 1)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat2 = stod(stop);
-                                    } else if (l == 3)
-                                        lon2 = stod(stop);
-                                }
-                            }
-                        }
-                    }
-
-                    nightLines.addEdge(stops[stopCodes.at(j)], stops[stopCodes.at(j + 1)], lineCode, haversine(lat1, lon1, lat2, lon2));
-                }
+                stopCodesByLine0.push_back(stopCodes);
 
                 ifstream dayFile1("./dataset/line_" + lineCode + "_1.csv");
                 getline(dayFile1, numOfStops); // get number of stops
+
                 if(numOfStops == "0")
                     break;
                 stopCodes.clear();
+                stopCodes.push_back(lineCode);
 
                 for(int k = 0; k < stoi(numOfStops); k++) {
                     getline(dayFile1, stopCode);
                     stopCodes.push_back(stopCode);
                 }
-                for(int k = 0; k < stopCodes.size() - 1; k++) {
-                    ifstream stopsFile("./dataset/stops.csv");
-                    getline(stopsFile, stop); // skip first line
+                stopCodesByLine1.push_back(stopCodes);
+                stopCodes.clear();
+            }
+            break;
+        }
+    }
+}
 
-                    while(getline(stopsFile, stop)) {
-                        stringstream ss(stop);
-                        while(getline(ss, stop, ',')) {
-                            if(stop == stopCodes.at(k)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat1 = stod(stop);
-                                    } else if (l == 3)
-                                        lon1 = stod(stop);
-                                }
-                            }
-                            if(stop == stopCodes.at(k + 1)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat2 = stod(stop);
-                                    } else if (l == 3)
-                                        lon2 = stod(stop);
-                                }
-                            }
-                        }
-                    nightLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode);
-                    }
+/**
+ * @brief separates the stops of each line in vectors
+ */
+void Parser::parseNightLinesWithDistances(vector<vector<string>> &stopCodesByLine0, vector<vector<string>> &stopCodesByLine1) {
+    map<string, int> stops = mapStopToInt();
+    Graph nightLines(415, true);
+    vector<string> stopCodes;
+    string line, firstLine, lineCode, numOfStops, stopCode, stop;
+
+    ifstream linesFile("./dataset/lines.csv");
+
+    getline(linesFile, firstLine); // skip first line
+
+    while(getline(linesFile, line)) {
+        stringstream ss(line);
+        while(getline(ss, line, ',')) {
+            for(int i = 0; i < 2; i++) {
+                if(i == 0) {
+                    lineCode = line;
+                    break;
                 }
             }
+            if(lineCode.find("M") != string::npos) {
+
+                ifstream dayFile("./dataset/line_" + lineCode + "_0.csv");
+                getline(dayFile, numOfStops); // get number of stops
+
+                stopCodes.push_back(lineCode);
+
+                for(int j = 0; j < stoi(numOfStops); j++) {
+                    getline(dayFile, stopCode);
+                    stopCodes.push_back(stopCode);
+                }
+                stopCodesByLine0.push_back(stopCodes);
+
+                ifstream dayFile1("./dataset/line_" + lineCode + "_1.csv");
+                getline(dayFile1, numOfStops); // get number of stops
+
+                if(numOfStops == "0")
+                    break;
+                stopCodes.clear();
+                stopCodes.push_back(lineCode);
+
+                for(int k = 0; k < stoi(numOfStops); k++) {
+                    getline(dayFile1, stopCode);
+                    stopCodes.push_back(stopCode);
+                }
+                stopCodesByLine1.push_back(stopCodes);
+                stopCodes.clear();
+            }
+            break;
         }
-        return nightLines;
+    }
+}
+
+/**
+ * @brief calculates the distance between 2 edges and adds them to the graph
+ * @param v1 the vector containing the stops of each line separated in vectors
+ * @param graph the graph to add the nodes to
+ */
+void Parser::addDistances(vector<vector<string>> &v1, Graph &graph) {
+    map<string, int> stops = mapStopToInt();
+    string firstLine, stopInfo, lineCode, zone;
+    double lat1 = 0, lat2 = 0, lon1, lon2;
+
+    for(auto v: v1) {
+        for(int i = 1; i < v.size() - 1; i++) {
+            lineCode = v.at(0);
+
+            ifstream stopsFile("./dataset/stops.csv");
+            getline(stopsFile, firstLine); // skip first line
+
+            while(getline(stopsFile, stopInfo)) {
+                stringstream ss(stopInfo);
+                while(getline(ss, stopInfo, ',') && (lat1 == 0 || lat2 == 0)) {
+                    if(stopInfo != v.at(i) && stopInfo != v.at(i + 1))
+                        break;
+                    if(stopInfo == v.at(i)) {
+                        for(int j = 0; j < 4; j++) {
+                            getline(ss, stopInfo, ',');
+                            if(j == 2)
+                                lat1 = stod(stopInfo);
+                            else if (j == 3)
+                                lon1 = stod(stopInfo);
+                        }
+                    }
+                    else if(stopInfo == v.at(i + 1)) {
+                        for(int k = 0; k < 4; k++) {
+                            getline(ss, stopInfo, ',');
+                            if(k == 2)
+                                lat2 = stod(stopInfo);
+                            else if(k == 3)
+                                lon2 = stod(stopInfo);
+                        }
+                    }
+
+                }
+            }
+            graph.addEdge(stops[v.at(i)], stops[v.at(i + 1)], lineCode, haversine(lat1, lon1, lat2, lon2));
+        }
     }
 }
 
@@ -270,108 +313,4 @@ map<string, int> Parser::mapStopToInt() {
         }
     }
     return stops;
-}
-
-/**
- * @brief parses the lines available during the day and sets the edges' weights as the distance between 2 stops
- * @return a graph in which each node is a stop
- */
-Graph Parser::parseDayLinesWithDistances() {
-    map<string, int> stops = mapStopToInt();
-    Graph dayLines(2500, true);
-    vector<string> stopCodes;
-    ifstream linesFile("./dataset/lines.csv");
-    string line, firstLine, lineCode, numOfStops, stopCode, stop;
-    double lat1, lat2, lon1, lon2;
-
-    getline(linesFile, firstLine); // skip first line
-
-    while(getline(linesFile, line)) {
-        stringstream ss(line);
-        while(getline(ss, line, ',')) {
-            for(int i = 0; i < 2; i++) {
-                if(i == 0) // only get the line code
-                    lineCode = line;
-            }
-            if(lineCode.find("M") == string::npos) { // M is not found in the line code
-                ifstream dayFile("./dataset/line_" + lineCode + "_0.csv");
-                getline(dayFile, numOfStops); // get number of stops
-
-                for(int j = 0; j < stoi(numOfStops); j++) {
-                    getline(dayFile, stopCode);
-                    stopCodes.push_back(stopCode);
-                }
-                for(int j = 0; j < stopCodes.size() - 1; j++) {
-                    ifstream stopsFile("./dataset/stops.csv");
-                    getline(stopsFile, stop); // skip first line
-
-                    while(getline(stopsFile, stop)) {
-                        stringstream ss(stop);
-                        while(getline(ss, stop, ',')) {
-                            if(stop == stopCodes.at(j)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat1 = stod(stop);
-                                    } else if (l == 3)
-                                        lon1 = stod(stop);
-                                }
-                            }
-                            if(stop == stopCodes.at(j + 1)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat2 = stod(stop);
-                                    } else if (l == 3)
-                                        lon2 = stod(stop);
-                                }
-                            }
-                        }
-                    }
-                    dayLines.addEdge(stops[stopCodes.at(j)], stops[stopCodes.at(j + 1)], lineCode, haversine(lat1, lon1, lat2, lon2));
-                }
-
-                ifstream dayFile1("./dataset/line_" + lineCode + "_1.csv");
-                getline(dayFile1, numOfStops); // get number of stops
-                if(numOfStops == "0")
-                    break;
-                stopCodes.clear();
-
-                for(int k = 0; k < stoi(numOfStops); k++) {
-                    getline(dayFile1, stopCode);
-                    stopCodes.push_back(stopCode);
-                }
-                for(int k = 0; k < stopCodes.size() - 1; k++) {
-                    ifstream stopsFile("./dataset/stops.csv");
-                    getline(stopsFile, stop); // skip first line
-
-                    while(getline(stopsFile, stop)) {
-                        stringstream ss(stop);
-                        while(getline(ss, stop, ',')) {
-                            if(stop == stopCodes.at(k)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat1 = stod(stop);
-                                    } else if (l == 3)
-                                        lon1 = stod(stop);
-                                }
-                            }
-                            if(stop == stopCodes.at(k + 1)) {
-                                for(int l = 0; l < 4; l++) {
-                                    getline(ss, stop, ',');
-                                    if(l == 2) {
-                                        lat2 = stod(stop);
-                                    } else if (l == 3)
-                                        lon2 = stod(stop);
-                                }
-                            }
-                        }
-                    }
-                    dayLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode, haversine(lat1, lon1, lat2, lon2));
-                }
-            }
-        }
-    }
-    return dayLines;
 }

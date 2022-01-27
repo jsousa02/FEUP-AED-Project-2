@@ -12,8 +12,9 @@ public:
     map<string, int> mapStopToInt();
     Graph parseDayLines();
     Graph parseNightLines();
-    Graph parseDayLinesWithDistances();
-    Graph parseNightLinesWithDistances();
+    void parseDayLinesWithDistances(vector<vector<string>> &stopCodesByLine0, vector<vector<string>> &stopCodesByLine1);
+    void addDistances(vector<vector<string>> &v1, Graph &graph);
+    void parseNightLinesWithDistances(vector<vector<string>> &stopCodesByLine0, vector<vector<string>> &stopCodesByLine1);
 };
 
 
