@@ -14,7 +14,7 @@ using namespace std;
 class Graph {
     struct Edge {
         int dest;   // Destination node
-        int weight; // An integer weight
+        float weight; // An integer weight
         string line; //
     };
 
@@ -23,7 +23,7 @@ class Graph {
         int pred;
         bool visited;
         string name, code, zone;
-        double latitude, longitude, dist;
+        float latitude, longitude, dist;
         void setName(string name);
         void setLatitude(double latitude);
         void setLongitude(double longitude);
@@ -36,9 +36,9 @@ class Graph {
         string getName();
         string getCode();
         string getZone();
-        double getLatitude();
-        double getLongitude();
-        double getDist();
+        float getLatitude();
+        float getLongitude();
+        float getDist();
     };
 
     int n;              // Graph size (vertices are numbered from 1 to n)
@@ -46,14 +46,14 @@ class Graph {
      // The list of nodes being represented
 
     void dijkstra(int s);
-
+    float harversine(int a, int b);
 public:
     // Constructor: nr nodes and direction (default: undirected)
     Graph(int nodes, bool dir = false);
     // Add edge from source to destination with a certain weight
-    void addEdge(int src, int dest, int weight = 1);
+    void addEdge(int src, int dest, float weight = 1);
     vector<Node> nodes;
-    int dijkstra_distance(int a, int b);
+    float dijkstra_distance(int a, int b);
     list<int> dijkstra_path(int a, int b);
     friend ostream& operator<<(ostream& out, Graph graph);
 };

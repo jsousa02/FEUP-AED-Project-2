@@ -3,13 +3,17 @@
 
 #include "graph.h"
 #include <climits>
+#include <cmath>
+#define INF (INT_MAX/2)
+
 
 // Constructor: nr nodes and direction (default: undirected)
 Graph::Graph(int num, bool dir) : n(num), hasDir(dir), nodes(num+1) {}
 
 // Add edge from source to destination with a certain weight
-void Graph::addEdge(int src, int dest, int weight) {
+void Graph::addEdge(int src, int dest, float weight) {
     if (src<0 || src>n || dest<0 || dest>n) return;
+    weight = harversine(src, dest);
     nodes[src].adj.push_back({dest, weight});
     if (!hasDir) nodes[dest].adj.push_back({src, weight});
 }
@@ -42,15 +46,15 @@ void Graph::Node::setZone(string zone) {
     this->zone = zone;
 }
 
-double Graph::Node::getLatitude() {
+float Graph::Node::getLatitude() {
     return this->latitude;
 }
 
-double Graph::Node::getLongitude() {
+float Graph::Node::getLongitude() {
     return this->longitude;
 }
 
-double Graph::Node::getDist() {
+float Graph::Node::getDist() {
     return this->dist;
 }
 
@@ -71,7 +75,7 @@ string Graph::Node::getZone() {
 }
 
 ostream& operator<<(ostream &out, Graph graph) {
-    for(int i = 0; i < graph.nodes.size(); i++) {
+    for(int i = 1; i < graph.nodes.size(); i++) {
         cout << "Name = " << graph.nodes.at(i).getName() << endl;
         cout << "Code = " << graph.nodes.at(i).getCode() << endl;
         cout << "Zone = " << graph.nodes.at(i).getZone() << endl;
@@ -82,32 +86,29 @@ ostream& operator<<(ostream &out, Graph graph) {
 }
 
 void Graph::dijkstra(int s) {
-    MinHeap<int, int>q(n, -1);
-
-    for(int v = 1; v <= n; v++) {
-        nodes.at(v).dist = INT_MAX;
-        q.insert(v, nodes.at(v).dist);
-        nodes.at(v).visited = false;
+    MinHeap<int, int> q(n, -1);
+    for (int v=1; v<=n; v++) {
+        nodes[v].dist = INF;
+        q.insert(v, INF);
+        nodes[v].visited = false;
     }
-
-    nodes.at(s).dist = 0;
-    q.decreaseKey(s, nodes.at(s).dist);
-
-    while(q.getSize() != 0) {
+    nodes[s].dist = 0;
+    q.decreaseKey(s, 0);
+    nodes[s].pred = s;
+    while (q.getSize()>0) {
         int u = q.removeMin();
-        nodes.at(u).visited = true;
-
-        for(auto e : nodes.at(u).adj) {
-            int v = e.dest;
-            int w = e.weight;
-
-            if(!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
-                nodes.at(v).dist = nodes.at(u).dist + w;
-                q.decreaseKey(v, nodes.at(v).dist);
+        // cout << "Node " << u << " with dist = " << nodes[u].dist << endl;
+        nodes[u].visited = true;
+        for (auto e : nodes[u].adj) {
+            double v = e.dest;
+            double w = e.weight;
+            if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist) {
+                nodes[v].dist = nodes[u].dist + w;
+                q.decreaseKey(v, nodes[v].dist);
+                nodes[v].pred = u;
             }
         }
     }
-
 }
 
 // ----------------------------------------------------------
@@ -116,16 +117,49 @@ void Graph::dijkstra(int s) {
 // ..............................
 // a) Distância entre dois nós
 // TODO
-int Graph::dijkstra_distance(int a, int b) {
+float Graph::dijkstra_distance(int a, int b) {
     dijkstra(a);
-    if(nodes.at(b).dist == INT_MAX) return -1;
-    return nodes.at(b).dist;
+    if (nodes[b].dist == INF) return -1;
+    return nodes[b].dist;
 }
 
 // ..............................
 // b) Caminho mais curto entre dois nós
 // TODO
 list<int> Graph::dijkstra_path(int a, int b) {
+    dijkstra(a);
     list<int> path;
+    if (nodes[b].dist == INF) return path;
+    path.push_back(b);
+    int v = b;
+    while (v != a) {
+        v = nodes[v].pred;
+        path.push_front(v);
+    }
     return path;
+}
+
+float Graph::harversine(int a, int b) {
+    float lat1, lon1, lat2, lon2;
+    lat1 = nodes.at(a).getLatitude();
+    lon1 = nodes.at(a).getLongitude();
+    lat2 = nodes.at(b).getLatitude();
+    lon2 = nodes.at(b).getLongitude();
+
+    float dLat = (lat2 - lat1) *
+                  M_PI / 180.0;
+    float dLon = (lon2 - lon1) *
+                  M_PI / 180.0;
+
+    // convert to radians
+    lat1 = (lat1) * M_PI / 180.0;
+    lat2 = (lat2) * M_PI / 180.0;
+
+    // apply formula
+    float c = pow(sin(dLat / 2), 2) +
+               pow(sin(dLon / 2), 2) *
+               cos(lat1) * cos(lat2);
+    float rad = 6371;
+    float r = 2 * asin(sqrt(c));
+    return rad * r;
 }
