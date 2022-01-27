@@ -8,6 +8,11 @@
 #include <vector>
 #include <list>
 #include <iostream>
+#include <climits>
+#include <queue>
+#include <fstream>
+#include <sstream>
+#include <cmath>
 
 using namespace std;
 
@@ -31,16 +36,16 @@ class Graph {
     vector<Node> nodes;
     void dijkstra(int s);
     void bfs(int v);
+    double haversine(double lat1, double lon1, double lat2, double lon2);
 
 public:
     // Constructor: nr nodes and direction (default: undirected)
     Graph(int nodes, bool dir = false);
-    // Add edge from source to destination with a certain weight
     void addEdge(int src, int dest, string line, double weight = 1.0);
     double dijkstra_distance(int a, int b);
     int bfs_distance(int a, int b);
+    vector<string> findClosestStop(double lat, double lon, double dist);
     list<int> dijkstra_path(int a, int b);
-    friend ostream& operator<<(ostream& out, Graph graph);
 };
 
 #endif

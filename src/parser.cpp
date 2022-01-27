@@ -5,6 +5,14 @@
 
 #include "../include/parser.h"
 
+/**
+ * @brief calculates the distance in kilometers between 2 points given their coordinates
+ * @param lat1 the latitude of the first point
+ * @param lon1 the longitude of the first point
+ * @param lat2 the latitude of the second point
+ * @param lon2 the longitude of the second point
+ * @return the distance between the 2 points
+ */
 double Parser::haversine(double lat1, double lon1, double lat2, double lon2) {
     double dLat = (lat2 - lat1) * M_PI / 180.0;
     double dLon = (lon2 - lon1) * M_PI / 180.0;
@@ -22,6 +30,10 @@ double Parser::haversine(double lat1, double lon1, double lat2, double lon2) {
     return rad * c;
 }
 
+/**
+ * @brief parses the lines available during the night and sets the weight of the edges as 1
+ * @return a graph in which each node is a stop
+ */
 Graph Parser::parseNightLines() {
     map<string, int> stops = mapStopToInt();
     Graph nightLines(415, true);
@@ -71,7 +83,10 @@ Graph Parser::parseNightLines() {
     return nightLines;
 }
 
-
+/**
+ * @brief parses the lines available during the day and sets the weight of the edges as 1
+ * @return a graph in which node is a stop
+ */
 Graph Parser::parseDayLines() {
     map<string, int> stops = mapStopToInt();
     Graph dayLines(2500, true);
@@ -120,6 +135,10 @@ Graph Parser::parseDayLines() {
     return dayLines;
 }
 
+/**
+ * @brief parses the night lines and sets the edges' weights as the distance between the stops
+ * @return a graph in which each node is a stop
+ */
 Graph Parser::parseNightLinesWithDistances() {
     map<string, int> stops = mapStopToInt();
     Graph nightLines(415, true);
@@ -224,6 +243,10 @@ Graph Parser::parseNightLinesWithDistances() {
     }
 }
 
+/**
+ * @brief maps a stop code into an integer
+ * @return a map in which the key is the stop code and the value is the corresponding integer
+ */
 map<string, int> Parser::mapStopToInt() {
     ifstream stopsFile("./dataset/stops.csv");
 
@@ -249,6 +272,10 @@ map<string, int> Parser::mapStopToInt() {
     return stops;
 }
 
+/**
+ * @brief parses the lines available during the day and sets the edges' weights as the distance between 2 stops
+ * @return a graph in which each node is a stop
+ */
 Graph Parser::parseDayLinesWithDistances() {
     map<string, int> stops = mapStopToInt();
     Graph dayLines(2500, true);
