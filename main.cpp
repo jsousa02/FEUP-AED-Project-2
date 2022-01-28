@@ -11,7 +11,7 @@ map<int, string> getStopName(map<string, int> m);
 
 int main() {
     Parser parser;
-
+    /*
     Graph dayLines = parser.parseDayLines();
     map<string, int> stops = parser.mapStopToInt(parser.readDayStops(parser.readDayLines()));
     map<int, string> stopsName = getStopName(stops);
@@ -22,8 +22,8 @@ int main() {
     for (auto index: path) {
         cout << stopsName[index] << endl;
     }
+    */
 
-    /*
     Graph dayLinesWithDistances = parser.parseDayLinesWithDistances();
     map<string, int> stops = parser.mapStopToInt(parser.readDayStops(parser.readDayLines()));
     map<int, string> stopsName = getStopName(stops);
@@ -35,7 +35,7 @@ int main() {
 
     cout << dayLinesWithDistances.dijkstra_distance(stops["INF1"], stops["PASS"]) << endl;//4.5612
     cout << dayLinesWithDistances.dijkstra_distance(stops["PASS2"], stops["INF1"]) << endl;//4.5683
-    */
+
 
     //Graph nightLinesWithDistances = parser.parseNightLinesWithDistances();
     //cout << dayLinesWithDistances.dijkstra_distance(stops["CQ10"], stops["BLRB1"]) << endl;

@@ -170,47 +170,6 @@ Graph Parser::parseDayLinesWithDistances() {
     return dayLines;
 }
 
-double Parser::lat(string code) {
-    string line;
-    ifstream stops("dataset/stops.csv"); // file containing info of all the stops
-    while (getline(stops, line)) {
-        stringstream stream(line);
-        getline(stream, line, ',');
-
-        if (line == code) { // only want the info related to the stops of the current line
-            for (int j = 0; j < 4; j++) { // 4 loops to get different information in each
-                getline(stream, line, ',');
-                if (j == 2) // get the latitude of the stop
-                    return stod(line);
-            }
-            break; // after we find the info of a stop in the file, we can exit the loop
-        }
-    }
-    stops.close();
-    return -1;
-}
-
-double Parser::lon(string code) {
-    string line;
-    ifstream stops("dataset/stops.csv"); // file containing info of all the stops
-    while (getline(stops, line)) {
-        stringstream stream(line);
-        getline(stream, line, ',');
-
-        if (line == code) { // only want the info related to the stops of the current line
-            for (int j = 0; j < 4; j++) { // 4 loops to get different information in each
-                getline(stream, line, ',');
-                if (j == 3) // get the longitude of the stop
-                    return stod(line);
-            }
-            break; // after we find the info of a stop in the file, we can exit the loop
-        }
-    }
-    stops.close();
-
-    return -1;
-}
-
 Graph Parser::parseNightLinesWithDistances() {
     vector<string> lines = readNightLines();
     vector<string> nightStops = readNightStops(lines);
@@ -232,18 +191,40 @@ void Parser::addEdges(vector<string> lines, map<string, int> stops, Graph &graph
             getline(linefile, firstline);
             getline(linefile, previousStop);        //first busstop
 
-            double lat1, lon1;
-            lat1 = lat(previousStop);
-            lon1 = lon(previousStop);
+            pair<double, double> pos1 = pos(previousStop);
+            double lat1 = pos1.first, lon1 = pos1.second;
 
             while(getline(linefile, currentStop)) { //next busstop
-                double lat2 = lat(currentStop);
-                double lon2 = lon(currentStop);
+                pair<double, double> pos2 = pos(currentStop);
+                double lat2 = pos2.first;
+                double lon2 = pos2.second;
                 graph.addEdge(stops[previousStop],stops[currentStop], line, haversine(lat1,lon1,lat2,lon2));
                 previousStop = currentStop;
-                lat1 = lat2;
-                lon1 = lon2;
+                lat1 = pos2.first;
+                lon1 = pos2.second;
             }
         }
     }
+}
+
+pair<double, double> Parser::pos(string code) {
+    pair<double, double> res;
+    string line;
+    ifstream stops("dataset/stops.csv"); // file containing info of all the stops
+    while (getline(stops, line)) {
+        stringstream stream(line);
+        getline(stream, line, ',');
+
+        if (line == code) { // only want the info related to the stops of the current line
+            for (int j = 0; j < 4; j++) { // 4 loops to get different information in each
+                getline(stream, line, ',');
+                if (j == 2) // get the latitude of the stop
+                    res.first = stod(line);
+                else if (j == 3) // get the longitude of the stop
+                    res.second = stod(line);
+            }
+            break; // after we find the info of a stop in the file, we can exit the loop
+        }
+    }
+    return res;
 }

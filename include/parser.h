@@ -6,8 +6,7 @@
 class Parser {
 private:
     double haversine(double lat1, double lon1, double lat2, double lon2);
-    double lat(string code);
-    double lon(string code);
+    pair<double, double> pos(string code);
     void addEdges(vector<string> lines, map<string, int> stops, Graph &graph);
 public:
     Parser() = default;

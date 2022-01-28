@@ -88,22 +88,22 @@ list<int> Graph::dijkstra_path(int a, int b) {
  * @param v the starting node
  */
 void Graph::bfs(int v) {
-    for (int v=1; v<=n; v++) nodes[v].visited = false;
-    nodes[v].dist = 0;
+    for (int v=1; v<=n; v++) nodes.at(v).visited = false;
+    nodes.at(v).dist = 0;
     queue<int> q; // queue of unvisited nodes
     q.push(v);
-    nodes[v]. visited = true;
-    nodes[v].pred = v;
+    nodes.at(v). visited = true;
+    nodes.at(v).pred = v;
     while (!q.empty()) { // while there are still unvisited nodes
         int u = q.front(); q.pop();
         //cout << u << " "; // show node order
-        for (auto e : nodes[u].adj) {
+        for (auto e : nodes.at(u).adj) {
             int w = e.dest;
-            if (!nodes[w].visited) {
+            if (!nodes.at(w).visited) {
                 q.push(w);
-                nodes[w].visited = true;
-                nodes[w].dist = nodes[u].dist +1;
-                nodes[w].pred = u;
+                nodes.at(w).visited = true;
+                nodes.at(w).dist = nodes.at(u).dist +1;
+                nodes.at(w).pred = u;
             }
         }
     }
@@ -197,7 +197,7 @@ list<int> Graph::bfs_path(int a, int b) {
     path.push_front(b);
     int i = b;
     while( i != a) {
-        i = nodes[i].pred;
+        i = nodes.at(i).pred;
         path.push_front(i);
     }
     return path;
