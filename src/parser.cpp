@@ -34,7 +34,7 @@ double Parser::haversine(double lat1, double lon1, double lat2, double lon2) {
  */
 Graph Parser::parseNightLines() {
     map<string, int> stops = mapStopToInt();
-    Graph nightLines(415, true);
+    Graph nightLines(2500, true);
     vector<string> stopCodes;
     ifstream linesFile("./dataset/lines.csv");
     string line, firstLine, lineCode, numOfStops, stopCode, stop;
@@ -76,6 +76,7 @@ Graph Parser::parseNightLines() {
                     nightLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode);
                 }
             }
+            break;
         }
     }
     return nightLines;
@@ -128,6 +129,7 @@ Graph Parser::parseDayLines() {
                     dayLines.addEdge(stops[stopCodes.at(k)], stops[stopCodes.at(k + 1)], lineCode, haversine(lat1, lon1, lat2, lon2));
                 }
             }
+            break;
         }
     }
     return dayLines;
