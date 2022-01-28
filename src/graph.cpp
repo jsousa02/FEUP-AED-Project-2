@@ -36,6 +36,7 @@ void Graph::dijkstra(int s) {
 
     nodes.at(s).dist = 0;
     q.decreaseKey(s, nodes.at(s).dist);
+    nodes.at(s).pred = s;
 
     while(q.getSize() != 0) {
         int u = q.removeMin();
@@ -48,6 +49,7 @@ void Graph::dijkstra(int s) {
             if(!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
                 nodes.at(v).dist = nodes.at(u).dist + w;
                 q.decreaseKey(v, nodes.at(v).dist);
+                nodes.at(v).pred = u;
             }
         }
     }
@@ -73,7 +75,15 @@ double Graph::dijkstra_distance(int a, int b) {
  * @return a list containing the nodes that are part of the path
  */
 list<int> Graph::dijkstra_path(int a, int b) {
+    dijkstra(a);
     list<int> path;
+    if(nodes.at(b).dist == INT_MAX / 2) return path;
+    path.push_back(b);
+    int v = b;
+    while(v != a) {
+        v = nodes.at(v).pred;
+        path.push_front(v);
+    }
     return path;
 }
 
