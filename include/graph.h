@@ -28,6 +28,8 @@ class Graph {
         int pred;
         bool visited;
         double dist;
+        int lineCounter;
+        string predLine;
     };
 
     int n;              // Graph size (vertices are numbered from 1 to n)
@@ -37,7 +39,7 @@ class Graph {
     void dijkstra(int s);
     void bfs(int v);
     double haversine(double lat1, double lon1, double lat2, double lon2);
-
+    void dijkstraLessLine(int s);
 public:
     // Constructor: nr nodes and direction (default: undirected)
     Graph(int nodes, bool dir = false);
@@ -47,6 +49,7 @@ public:
     vector<string> findClosestStop(double lat, double lon, double dist);
     list<int> dijkstra_path(int a, int b);
     list<int> bfs_path(int a, int b);
+    int dijkstra_lessLine(int a, int b);
 };
 
 #endif

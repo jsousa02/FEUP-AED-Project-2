@@ -202,3 +202,47 @@ list<int> Graph::bfs_path(int a, int b) {
     }
     return path;
 }
+
+void Graph::dijkstraLessLine(int s) {
+    MinHeap<int, int> q(n, -1);
+    for (int v=1; v<=n; v++) {
+        nodes.at(v).dist = INF;
+        q.insert(v, INF);
+        nodes.at(v).visited = false;
+        nodes.at(v).predLine = "";
+        nodes.at(v).lineCounter = 0;
+    }
+
+    nodes.at(s).dist = 0;
+    q.decreaseKey(s, 0);
+    nodes.at(s).pred = s;
+
+    while (q.getSize()>0) {
+        int u = q.removeMin();
+        // cout << "Node " << u << " with dist = " << nodes[u].dist << endl;
+        nodes.at(u).visited = true;
+        for (auto e : nodes.at(u).adj) {
+            double v = e.dest;
+            double w = e.weight;
+            string l = e.line;
+            if (!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
+                nodes.at(v).dist = nodes.at(u).dist + w;
+                q.decreaseKey(v, nodes.at(v).dist);
+                nodes.at(v).pred = u;
+            }
+
+            if(nodes.at(u).predLine != e.line){
+                nodes.at(v).lineCounter++;
+                nodes.at(v).predLine = e.line;
+            }
+        }
+    }
+}
+
+int Graph::dijkstra_lessLine(int a, int b) {
+    dijkstraLessLine(a);
+    /*for (int v = 1; v <=n ; v++) {
+        cout << "Linecounter of " << v << " is " << nodes.at(v).lineCounter << endl;
+    }*/
+    return nodes.at(b).lineCounter;
+}
