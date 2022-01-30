@@ -28,7 +28,7 @@ class Graph {
         int pred;
         bool visited;
         double dist;
-        bool isOpen;
+        bool isOpen = true;
     };
 
     int n;              // Graph size (vertices are numbered from 1 to n)

@@ -28,7 +28,7 @@ int Menu::intInput(int min, int max) {
 pair<int, string> Menu::stationInput() {
     string input;
     int inputCode; // 0 means input ok, 1 means input not in station code format, 2 means station not found;
-    int output;
+    pair<int, string> output;
     do {
         inputCode = 0;
         cin >> input;
@@ -38,7 +38,10 @@ pair<int, string> Menu::stationInput() {
         if (inputCode == 0 && stops.find(input) == stops.end()) inputCode = 2;
         if (inputCode == 1) cout << "That's not the station code format of input. Please try again." << endl;
         if (inputCode == 2) cout << "Station not found. Please try again." << endl;
-        if (inputCode == 0) output = stops[input];
+        if (inputCode == 0) {
+            output.second = input;
+            output.first = stops[input];
+        }
     } while (inputCode != 0);
     return output;
 }
@@ -71,30 +74,39 @@ string Menu::query(string text, vector<string> options) {
     return options[intInput(0, options.size())-1];
 }
 
-void Menu::startingMenu() {
+void Menu::start() {
     cout << welcome << endl;
-    cout << startingMenuString;
-    int option = intInput(1,2);
-    switch (option) {
-        case 1:
-
-            break;
-        case 2:
-            runSearchRoute();
-            break;
-    }
+    int option;
+    do {
+        cout << startingMenuString;
+        option = intInput(1,2);
+        switch (option) {
+            case 1:
+                closeStationQuery();
+                break;
+            case 2:
+                runSearchRoute();
+                break;
+        }
+    } while (option != 2);
 }
 
 void Menu::closeStationQuery() {
     int option;
-    do {
-        cout << closeStationOrEnd;
-        option = intInput(1, 2);
-        if (option == 1) {
-            cout << whichStation << endl;
+    closedStations.clear();
 
-        }
-    } while (option != 2);
+    cout << closeStationOrEnd;
+    option = intInput(1, 2);
+    if (option == 1) {
+        do {
+            cout << whichStation << endl;
+            closedStations.push_back(stationInput().second);
+            cout << "Register another as closed?\n"
+                    "1 - Yes\n"
+                    "2 - Finish\n";
+            option = intInput(1, 2);
+        } while (option == 1);
+    }
 }
 
 void Menu::runSearchRoute() {
@@ -150,7 +162,7 @@ void Menu::runSearchRoute() {
     } else if (priority == "Lesser route distance" && time == "Night") {
         caseCode = 3;
     }
-    //Results
+    closeStationQuery();
     callResults();
 }
 
