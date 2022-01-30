@@ -46,7 +46,7 @@ public:
     int bfs_distance(int a, int b);
     list<int> dijkstra_path(int a, int b);
     list<int> bfs_path(int a, int b);
-    double mst_distance(int a, int b);
+    double mst_distance(int a);
 };
 
 #endif

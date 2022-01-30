@@ -169,7 +169,7 @@ void Graph::mst(int s) {
     }
 }
 
-double Graph::mst_distance(int a, int b) {
+double Graph::mst_distance(int a) {
     mst(a);
     double sum = 0;
     for(Node node: nodes) {
