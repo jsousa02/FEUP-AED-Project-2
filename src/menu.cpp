@@ -25,7 +25,7 @@ int Menu::intInput(int min, int max) {
  * @brief ask for station and checks if input station exists
  * @return station's node number
  */
-int Menu::stationInput() {
+pair<int, string> Menu::stationInput() {
     string input;
     int inputCode; // 0 means input ok, 1 means input not in station code format, 2 means station not found;
     int output;
@@ -71,11 +71,35 @@ string Menu::query(string text, vector<string> options) {
     return options[intInput(0, options.size())-1];
 }
 
-void Menu::run() {
+void Menu::startingMenu() {
+    cout << welcome << endl;
+    cout << startingMenuString;
+    int option = intInput(1,2);
+    switch (option) {
+        case 1:
+
+            break;
+        case 2:
+            runSearchRoute();
+            break;
+    }
+}
+
+void Menu::closeStationQuery() {
+    int option;
+    do {
+        cout << closeStationOrEnd;
+        option = intInput(1, 2);
+        if (option == 1) {
+            cout << whichStation << endl;
+
+        }
+    } while (option != 2);
+}
+
+void Menu::runSearchRoute() {
     fromStation = -1;
     toStation = -1;
-
-    cout << welcome << endl;
 
     time = query(dayNightQuery, dayOrNight);
     if (time == "Day"){
@@ -93,7 +117,7 @@ void Menu::run() {
     from = query(stationQuery, stationOrPlace);
     if (from == "Station") {
         cout << whichStation << endl;
-        fromStation = stationInput();
+        fromStation = stationInput().first;
     } else {
         cout << coordinatesQuery << endl;
         cout << latitudeQuery << endl;
@@ -105,7 +129,7 @@ void Menu::run() {
     to = query(stationQuery2, stationOrPlace);
     if (to == "Station") {
         cout << whichStation << endl;
-        toStation = stationInput();
+        toStation = stationInput().first;
     } else {
         cout << coordinatesQuery << endl;
         cout << latitudeQuery << endl;
