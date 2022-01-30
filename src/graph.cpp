@@ -1,11 +1,10 @@
-// AED 2021/2022 - Aula Pratica 11
-// Pedro Ribeiro (DCC/FCUP) [17/01/2022]
-
 #include "graph.h"
 
+#define INF (INT_MAX/2)
 
-// Constructor: nr nodes and direction (default: undirected)
 Graph::Graph(int num, bool dir) : n(num), hasDir(dir), nodes(num + 1) {}
+
+Graph::Graph() = default;
 
 /**
  * @brief adds an edge connecting the src node to the dest node with a given weight
@@ -26,34 +25,32 @@ void Graph::addEdge(int src, int dest, string line, double weight) {
  * @param s the node to calculate the distance to
  */
 void Graph::dijkstra(int s) {
-    MinHeap<int, int>q(n, -1);
-
-    for(int v = 1; v <= n; v++) {
-        nodes.at(v).dist = INT_MAX / 2;
-        q.insert(v, nodes.at(v).dist);
+    MinHeap<int, int> q(n, -1);
+    for (int v=1; v<=n; v++) {
+        nodes.at(v).dist = INF;
+        q.insert(v, INF);
         nodes.at(v).visited = false;
     }
-
     nodes.at(s).dist = 0;
-    q.decreaseKey(s, nodes.at(s).dist);
+    q.decreaseKey(s, 0);
     nodes.at(s).pred = s;
-
-    while(q.getSize() != 0) {
+    while (q.getSize()>0) {
         int u = q.removeMin();
+        // cout << "Node " << u << " with dist = " << nodes[u].dist << endl;
         nodes.at(u).visited = true;
+        for (auto e : nodes.at(u).adj) {
+            if (nodes.at(u).isOpen){
+                double v = e.dest;
+                double w = e.weight;
 
-        for(auto e : nodes.at(u).adj) {
-            int v = e.dest;
-            double w = e.weight;
-
-            if(!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
-                nodes.at(v).dist = nodes.at(u).dist + w;
-                q.decreaseKey(v, nodes.at(v).dist);
-                nodes.at(v).pred = u;
+                if (!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
+                    nodes.at(v).dist = nodes.at(u).dist + w;
+                    q.decreaseKey(v, nodes.at(v).dist);
+                    nodes.at(v).pred = u;
+                }
             }
         }
     }
-
 }
 
 /**
@@ -64,7 +61,7 @@ void Graph::dijkstra(int s) {
  */
 double Graph::dijkstra_distance(int a, int b) {
     dijkstra(a);
-    if(nodes.at(b).dist == INT_MAX) return -1;
+    if(nodes.at(b).dist == INF) return -1.0;
     return nodes.at(b).dist;
 }
 
@@ -77,12 +74,12 @@ double Graph::dijkstra_distance(int a, int b) {
 list<int> Graph::dijkstra_path(int a, int b) {
     dijkstra(a);
     list<int> path;
-    if(nodes.at(b).dist == INT_MAX / 2) return path;
-    path.push_back(b);
-    int v = b;
-    while(v != a) {
-        v = nodes.at(v).pred;
-        path.push_front(v);
+    if (dijkstra_distance(a,b) == -1.0) return path;
+    path.push_front(b);
+    int i = b;
+    while( i != a) {
+        i = nodes[i].pred;
+        path.push_front(i);
     }
     return path;
 }
@@ -93,20 +90,24 @@ list<int> Graph::dijkstra_path(int a, int b) {
  * @param v the starting node
  */
 void Graph::bfs(int v) {
-    queue<int> q;
-    q.push(v);
-    nodes.at(v).dist = 0;
-    nodes.at(v).visited = true;
+    for (int v=1; v<=n; v++)
+        nodes.at(v).visited = false;
 
-    while(!q.empty()) {
-        int u = q.front();
-        q.pop();
-        for(auto e: nodes.at(u).adj) {
+    nodes.at(v).dist = 0;
+    queue<int> q; // queue of unvisited nodes
+    q.push(v);
+    nodes.at(v). visited = true;
+    nodes.at(v).pred = v;
+
+    while (!q.empty()) { // while there are still unvisited nodes
+        int u = q.front(); q.pop();
+        for (auto e : nodes.at(u).adj) {
             int w = e.dest;
-            if(!nodes.at(w).visited) {
+            if (!nodes.at(w).visited) {
                 q.push(w);
                 nodes.at(w).visited = true;
-                nodes.at(w).dist = nodes.at(u).dist + 1;
+                nodes.at(w).dist = nodes.at(u).dist +1;
+                nodes.at(w).pred = u;
             }
         }
     }
@@ -119,69 +120,84 @@ void Graph::bfs(int v) {
  * @return the amount of stops between the 2 nodes
  */
 int Graph::bfs_distance(int a, int b) {
+    if (a == b) return 0;
+    for (int v = 1; v < n; v++) nodes[v].dist = -1;
     bfs(a);
-    return nodes.at(b).dist;
+    return nodes[b].dist;
 }
 
 /**
- * @brief finds closest stops to a point given a maximum distance
- * @param lat the latitude of the point
- * @param lon the longitude of the point
- * @param dist the maximum distance to the point
- * @return a vector with all the stops that are closer to the point
+ * @brief calculates the path from a starting node to a destination node
+ * @param a the starting node
+ * @param b the ending node
+ * @return a list containing the nodes that are part of the path
  */
-vector<string> Graph::findClosestStop(double lat, double lon, double dist) {
-    ifstream stopsFile("./dataset/stops.csv");
+list<int> Graph::bfs_path(int a, int b) {
+    list<int> path;
+    if (bfs_distance(a,b) == -1) return path;
+    bfs(a);
+    path.push_front(b);
+    int i = b;
 
-    string firstLine, line, stopCode, stopName;
-    int count = 0;
-    double lat2, lon2, distance;
-    vector<string> closestStops;
-
-    getline(stopsFile, firstLine);
-
-    while(getline(stopsFile, line)) {
-        stringstream ss(line);
-        while(getline(ss, line, ',')) {
-            if(count == 0)
-                stopCode = line;
-            else if(count == 1)
-                stopName = line;
-            else if(count == 3)
-                lat2 = stod(line);
-            else if(count == 4)
-                lon2 = stod(line);
-            count++;
-        }
-        count = 0;
-        distance = haversine(lat, lon, lat2, lon2);
-        if(distance <= dist)
-            closestStops.push_back(stopCode);
+    while( i != a) {
+        i = nodes.at(i).pred;
+        path.push_front(i);
     }
-    return closestStops;
+    return path;
 }
 
 /**
- * @brief calculates the distance in kilometers between 2 points given their coordinates
- * @param lat1 the latitude of the first point
- * @param lon1 the longitude of the first point
- * @param lat2 the latitude of the second point
- * @param lon2 the longitude of the second point
- * @return the distance between the 2 points
+ * @brief minimum spanning tree to be used in the stops
+ * @brief the time complexity is O(E + V), in which E represents the number of edges and V the number of nodes
+ * @param s the starting stop
  */
-double Graph::haversine(double lat1, double lon1, double lat2, double lon2) {
-    double dLat = (lat2 - lat1) * M_PI / 180.0;
-    double dLon = (lon2 - lon1) * M_PI / 180.0;
+void Graph::mst(int s) {
+    MinHeap<int, double> q(n, -1);
 
-    // convert to radians
-    lat1 = (lat1) * M_PI / 180.0;
-    lat2 = (lat2) * M_PI / 180.0;
+    for(int i = 0; i < nodes.size(); i++) {
+        nodes.at(i).dist = INF;
+        nodes.at(i).pred = NULL;
+        q.insert(i, nodes.at(i).dist);
+    }
+    nodes.at(s).dist = 0;
+    q.decreaseKey(s, nodes.at(s).dist);
+    nodes.at(s).pred = s;
 
-    // apply formula
-    double a = pow(sin(dLat / 2), 2) +
-               pow(sin(dLon / 2), 2) *
-               cos(lat1) * cos(lat2);
-    double rad = 6371;
-    double c = 2 * asin(sqrt(a));
-    return rad * c;
+    while(q.getSize() != 0) {
+        int u = q.removeMin();
+
+        for(auto e: nodes.at(u).adj) {
+            double v = e.dest;
+            double w = e.weight;
+            if (!nodes.at(v).visited && w < nodes.at(v).dist) {
+                nodes.at(v).dist = w;
+                q.decreaseKey(v, nodes.at(v).dist);
+                nodes.at(v).pred = u;
+            }
+        }
+    }
+}
+
+/**
+ * @brief calculates the minimum distance to go through all the stops from a starting stop
+ * @param a the starting stop
+ * @return the minimum distance to go through all the stops
+ */
+double Graph::mst_distance(int a) {
+    mst(a);
+    double sum = 0;
+
+    for(Node node: nodes) {
+        if(node.dist != INF)
+            sum += node.dist;
+    }
+    return sum;
+}
+
+/**
+ * @brief sets node at position "a" isOpen field as false
+ * @param a position of the node to close
+ */
+void Graph::closeNode(int a) {
+    nodes.at(a).isOpen = false;
 }

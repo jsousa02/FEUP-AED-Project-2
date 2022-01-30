@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>FEUP-AED-Project-2: FEUP-AED-Project-2</title>
+<title>FEUP-AED-Project-2: Graph::Edge Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -47,7 +47,6 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -62,29 +61,34 @@ $(function() {
 </iframe>
 </div>
 
-<div><div class="header">
-  <div class="headertitle"><div class="title">FEUP-AED-Project-2 </div></div>
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="class_graph.html">Graph</a></li><li class="navelem"><a class="el" href="struct_graph_1_1_edge.html">Edge</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="struct_graph_1_1_edge-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">Graph::Edge Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p ><a class="anchor" id="md_README"></a> Given a dataset from the <a href="https://www.stcp.pt/pt/viajar/">SCTP</a> (Sociedade de Transportes Coletivos do Porto), we provide a user options to calculate routes.</p>
-<p >The user can choose a stop to start by its code or provide a location, given the coordinates and a distance, and the stops that are at a maximum distance from the location will be presented.</p>
-<p >The user can choose the starting stop by the following options:</p><ul>
-<li>Provide the code of a stop</li>
-<li>Provide a location, given its coordinates</li>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a7afb7da8c73dfaca8bb3808b185fa05b"><td class="memItemLeft" align="right" valign="top"><a id="a7afb7da8c73dfaca8bb3808b185fa05b" name="a7afb7da8c73dfaca8bb3808b185fa05b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>dest</b></td></tr>
+<tr class="separator:a7afb7da8c73dfaca8bb3808b185fa05b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9acc7410b39c9cb4101b55166c45bac6"><td class="memItemLeft" align="right" valign="top"><a id="a9acc7410b39c9cb4101b55166c45bac6" name="a9acc7410b39c9cb4101b55166c45bac6"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>weight</b></td></tr>
+<tr class="separator:a9acc7410b39c9cb4101b55166c45bac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d280684111151de15b4f1e032c60615"><td class="memItemLeft" align="right" valign="top"><a id="a9d280684111151de15b4f1e032c60615" name="a9d280684111151de15b4f1e032c60615"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>line</b></td></tr>
+<tr class="separator:a9d280684111151de15b4f1e032c60615"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>include/<a class="el" href="graph_8h_source.html">graph.h</a></li>
 </ul>
-<p >There are 2 options to find the best route:</p><ul>
-<li>The one with the shortest distance</li>
-<li>The one that goes through the fewest stops</li>
-</ul>
-<p >The destination to the trip can be chosen by 2 different methods:</p><ul>
-<li>Provide a location, given its coordinates</li>
-<li>Provide the code of a stop</li>
-</ul>
-<p >If the user provides a location, the program will calculate the distance between the closest stop from that location and display it to the user.</p>
-<p >In all the possible routes, the stops that are part of it are displayed, from the starting to the ending stop.</p>
-<p >Finally, if the user wants to go through all the stops given a starting stop, the program will display the minimum distance needed to do that.</p>
-<p >This project was developed by David Fang, João Teixeira and Jorge Sousa. </p>
-</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

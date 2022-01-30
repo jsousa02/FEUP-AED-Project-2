@@ -9,7 +9,10 @@ add_executable(aed
         include/graph.h
         include/minHeap.h
         src/graph.cpp
-        main.cpp include/parser.h src/parser.cpp)
+        main.cpp include/parser.h src/parser.cpp
+        src/menu.cpp include/menu.h)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Doxygen Build
 find_package(Doxygen)
@@ -19,7 +22,7 @@ if(DOXYGEN_FOUND)
         file(MAKE_DIRECTORY "${BUILD_DOC_DIR}")
     endif()
 
-    set(DOXYGEN_IN "${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile")
+    set(DOXYGEN_IN "Doxyfile")
     set(DOXYGEN_OUT "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
     configure_file("${DOXYGEN_IN}" "${DOXYGEN_OUT}" @ONLY)
     message("Doxygen build started")
