@@ -62,7 +62,7 @@ public:
     int intInput(int min, int max);
     pair<int, string> stationInput();
     double coordinatesInput();
-    void runSearchRoute();
+    void run();
     void callResults();
 };
 

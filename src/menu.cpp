@@ -75,7 +75,7 @@ string Menu::query(string text, vector<string> options) {
 }
 
 void Menu::start() {
-    cout << welcome << endl;
+
     int option;
     do {
         cout << startingMenuString;
@@ -85,7 +85,7 @@ void Menu::start() {
                 closeStationQuery();
                 break;
             case 2:
-                runSearchRoute();
+                run();
                 break;
         }
     } while (option != 2);
@@ -109,10 +109,12 @@ void Menu::closeStationQuery() {
     }
 }
 
-void Menu::runSearchRoute() {
+void Menu::run() {
     fromStation = -1;
     toStation = -1;
+    int option;
 
+    cout << welcome << endl;
     time = query(dayNightQuery, dayOrNight);
     if (time == "Day"){
         vector<string> dayStops = parser.readDayStops(parser.readDayLines());
@@ -125,45 +127,52 @@ void Menu::runSearchRoute() {
         this->stopsPositions = parser.readStopsPos(nightStops);
         this->stopsName = getStopName(stops);
     }
+    cout << "Select an option\n"
+            "1 - Search route\n"
+            "2 - have a shitton of fun\n";
+    option = intInput(1, 2);
+    if (option == 1) {
+        from = query(stationQuery, stationOrPlace);
+        if (from == "Station") {
+            cout << whichStation << endl;
+            fromStation = stationInput().first;
+        } else {
+            cout << coordinatesQuery << endl;
+            cout << latitudeQuery << endl;
+            fromLatitude = coordinatesInput();
+            cout << longitudeQuery << endl;
+            fromLongitude = coordinatesInput();
+        }
 
-    from = query(stationQuery, stationOrPlace);
-    if (from == "Station") {
-        cout << whichStation << endl;
-        fromStation = stationInput().first;
+        to = query(stationQuery2, stationOrPlace);
+        if (to == "Station") {
+            cout << whichStation << endl;
+            toStation = stationInput().first;
+        } else {
+            cout << coordinatesQuery << endl;
+            cout << latitudeQuery << endl;
+            toLatitude = coordinatesInput();
+            cout << longitudeQuery << endl;
+            toLongitude = coordinatesInput();
+        }
+
+        cout << options << endl;
+        priority = query(priorityQuery, priorities);
+
+        if (priority == "Lesser stops" && time == "Day"){
+            caseCode = 0;
+        } else if (priority == "Lesser route distance" && time == "Day") {
+            caseCode = 1;
+        } else if (priority == "Lesser stops" && time == "Night") {
+            caseCode = 2;
+        } else if (priority == "Lesser route distance" && time == "Night") {
+            caseCode = 3;
+        }
+        closeStationQuery();
+        callResults();
     } else {
-        cout << coordinatesQuery << endl;
-        cout << latitudeQuery << endl;
-        fromLatitude = coordinatesInput();
-        cout << longitudeQuery << endl;
-        fromLongitude = coordinatesInput();
+        // MST HERE
     }
-
-    to = query(stationQuery2, stationOrPlace);
-    if (to == "Station") {
-        cout << whichStation << endl;
-        toStation = stationInput().first;
-    } else {
-        cout << coordinatesQuery << endl;
-        cout << latitudeQuery << endl;
-        toLatitude = coordinatesInput();
-        cout << longitudeQuery << endl;
-        toLongitude = coordinatesInput();
-    }
-
-    cout << options << endl;
-    priority = query(priorityQuery, priorities);
-
-    if (priority == "Lesser stops" && time == "Day"){
-        caseCode = 0;
-    } else if (priority == "Lesser route distance" && time == "Day") {
-        caseCode = 1;
-    } else if (priority == "Lesser stops" && time == "Night") {
-        caseCode = 2;
-    } else if (priority == "Lesser route distance" && time == "Night") {
-        caseCode = 3;
-    }
-    closeStationQuery();
-    callResults();
 }
 
 map<int, string> Menu::getStopName(map<string, int> m) {
