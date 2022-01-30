@@ -4,6 +4,6 @@ using namespace std;
 
 int main() {
     Menu menu = Menu();
-    menu.run();
+    menu.runSearchRoute();
     return 0;
 }

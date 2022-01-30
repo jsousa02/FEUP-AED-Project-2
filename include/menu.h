@@ -24,10 +24,17 @@ class Menu {
     string options = "Now about your travel options. ";
     string dayNightQuery = "Are you traveling at day? Or night?";
     string priorityQuery = "And what is your priority?";
+    string startingMenuString = "What do you want to do?\n"
+                          "1 - Close stations\n"
+                          "2 - Search route\n";
+    string closeStationOrEnd = "Is any station closed?\n"
+                               "1 - Yes\n"
+                               "2 - No\n";
 
     vector <string> priorities = {"Lesser stops", "Lesser route distance"};
     vector <string> stationOrPlace = {"Station", "Place"};
     vector <string> dayOrNight = {"Day", "Night"};
+    vector <string> closedStations;
 
     Graph graph;
 
@@ -50,10 +57,12 @@ class Menu {
     double haversine(double lat1, double lon1, double lat2, double lon2);
 public:
     Menu();
+    void start();
+    void closeStationQuery();
     int intInput(int min, int max);
-    int stationInput();
+    pair<int, string> stationInput();
     double coordinatesInput();
-    void run();
+    void runSearchRoute();
     void callResults();
 };
 

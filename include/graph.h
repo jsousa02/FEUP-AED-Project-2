@@ -28,6 +28,7 @@ class Graph {
         int pred;
         bool visited;
         double dist;
+        bool isOpen = true;
     };
 
     int n;              // Graph size (vertices are numbered from 1 to n)
@@ -47,6 +48,7 @@ public:
     list<int> dijkstra_path(int a, int b);
     list<int> bfs_path(int a, int b);
     double mst_distance(int a);
+    void closeNode(int a);
 };
 
 #endif

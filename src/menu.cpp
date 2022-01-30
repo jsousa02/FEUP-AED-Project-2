@@ -25,10 +25,10 @@ int Menu::intInput(int min, int max) {
  * @brief ask for station and checks if input station exists
  * @return station's node number
  */
-int Menu::stationInput() {
+pair<int, string> Menu::stationInput() {
     string input;
     int inputCode; // 0 means input ok, 1 means input not in station code format, 2 means station not found;
-    int output;
+    pair<int, string> output;
     do {
         inputCode = 0;
         cin >> input;
@@ -38,7 +38,10 @@ int Menu::stationInput() {
         if (inputCode == 0 && stops.find(input) == stops.end()) inputCode = 2;
         if (inputCode == 1) cout << "That's not the station code format of input. Please try again." << endl;
         if (inputCode == 2) cout << "Station not found. Please try again." << endl;
-        if (inputCode == 0) output = stops[input];
+        if (inputCode == 0) {
+            output.second = input;
+            output.first = stops[input];
+        }
     } while (inputCode != 0);
     return output;
 }
@@ -71,11 +74,44 @@ string Menu::query(string text, vector<string> options) {
     return options[intInput(0, options.size())-1];
 }
 
-void Menu::run() {
+void Menu::start() {
+    cout << welcome << endl;
+    int option;
+    do {
+        cout << startingMenuString;
+        option = intInput(1,2);
+        switch (option) {
+            case 1:
+                closeStationQuery();
+                break;
+            case 2:
+                runSearchRoute();
+                break;
+        }
+    } while (option != 2);
+}
+
+void Menu::closeStationQuery() {
+    int option;
+    closedStations.clear();
+
+    cout << closeStationOrEnd;
+    option = intInput(1, 2);
+    if (option == 1) {
+        do {
+            cout << whichStation << endl;
+            closedStations.push_back(stationInput().second);
+            cout << "Register another as closed?\n"
+                    "1 - Yes\n"
+                    "2 - Finish\n";
+            option = intInput(1, 2);
+        } while (option == 1);
+    }
+}
+
+void Menu::runSearchRoute() {
     fromStation = -1;
     toStation = -1;
-
-    cout << welcome << endl;
 
     time = query(dayNightQuery, dayOrNight);
     if (time == "Day"){
@@ -93,7 +129,7 @@ void Menu::run() {
     from = query(stationQuery, stationOrPlace);
     if (from == "Station") {
         cout << whichStation << endl;
-        fromStation = stationInput();
+        fromStation = stationInput().first;
     } else {
         cout << coordinatesQuery << endl;
         cout << latitudeQuery << endl;
@@ -105,7 +141,7 @@ void Menu::run() {
     to = query(stationQuery2, stationOrPlace);
     if (to == "Station") {
         cout << whichStation << endl;
-        toStation = stationInput();
+        toStation = stationInput().first;
     } else {
         cout << coordinatesQuery << endl;
         cout << latitudeQuery << endl;
@@ -126,7 +162,7 @@ void Menu::run() {
     } else if (priority == "Lesser route distance" && time == "Night") {
         caseCode = 3;
     }
-    //Results
+    closeStationQuery();
     callResults();
 }
 
@@ -166,7 +202,7 @@ void Menu::callResults() {
 
     switch (caseCode) {
         case 0:
-            graph = parser.parseDayLines();
+            graph = parser.parseDayLines(closedStations);
             distInt = graph.bfs_distance(fromStation, toStation);
             if (distInt > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]
@@ -175,7 +211,7 @@ void Menu::callResults() {
             path = graph.bfs_path(fromStation, toStation);
             break;
         case 1:
-            graph = parser.parseDayLinesWithDistances();
+            graph = parser.parseDayLinesWithDistances(closedStations);
             distDouble = graph.dijkstra_distance(fromStation, toStation);
             if (distDouble > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]
@@ -184,7 +220,7 @@ void Menu::callResults() {
             path = graph.dijkstra_path(fromStation, toStation);
             break;
         case 2:
-            graph = parser.parseNightLines();
+            graph = parser.parseNightLines(closedStations);
             distInt = graph.bfs_distance(fromStation, toStation);
             if (distInt > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]
@@ -193,7 +229,7 @@ void Menu::callResults() {
             path = graph.bfs_path(fromStation, toStation);
             break;
         case 3:
-            graph = parser.parseNightLinesWithDistances();
+            graph = parser.parseNightLinesWithDistances(closedStations);
             distDouble = graph.dijkstra_distance(fromStation, toStation);
             if (distDouble > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]

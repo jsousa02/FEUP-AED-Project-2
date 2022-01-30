@@ -43,12 +43,15 @@ void Graph::dijkstra(int s) {
         // cout << "Node " << u << " with dist = " << nodes[u].dist << endl;
         nodes.at(u).visited = true;
         for (auto e : nodes.at(u).adj) {
-            double v = e.dest;
-            double w = e.weight;
-            if (!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
-                nodes.at(v).dist = nodes.at(u).dist + w;
-                q.decreaseKey(v, nodes.at(v).dist);
-                nodes.at(v).pred = u;
+            if (nodes.at(u).isOpen){
+                double v = e.dest;
+                double w = e.weight;
+
+                if (!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
+                    nodes.at(v).dist = nodes.at(u).dist + w;
+                    q.decreaseKey(v, nodes.at(v).dist);
+                    nodes.at(v).pred = u;
+                }
             }
         }
     }
@@ -177,4 +180,8 @@ double Graph::mst_distance(int a) {
             sum += node.dist;
     }
     return sum;
+}
+
+void Graph::closeNode(int a) {
+    nodes.at(a).isOpen = false;
 }

@@ -130,7 +130,7 @@ map<string, int> Parser::mapStopToInt(vector<string> stopsVec) {
  * @brief parses the lines available during daytime and sets the weight of the edges as 1
  * @return a graph in which each node is a stop
  */
-Graph Parser::parseDayLines() {
+Graph Parser::parseDayLines(vector<string> closedStations) {
     vector<string> lines = readDayLines();
     vector<string> dayStops = readDayStops(lines);
     Graph dayLines(dayStops.size(),true);
@@ -151,13 +151,18 @@ Graph Parser::parseDayLines() {
             }
         }
     }
+
+    for (auto closedStation: closedStations) {
+        dayLines.closeNode(stops[closedStation]);
+    }
+
     return dayLines;
 }
 /**
  * @brief parses the lines available during the night and sets the weight of the edges as 1
  * @return a graph in which each node is a stop
  */
-Graph Parser::parseNightLines() {
+Graph Parser::parseNightLines(vector<string> closedStations) {
     vector<string> lines = readNightLines();
     vector<string> nightStops = readNightStops(lines);
     Graph nightLines(nightStops.size(),true);
@@ -178,13 +183,17 @@ Graph Parser::parseNightLines() {
             }
         }
     }
+
+    for (auto closedStation: closedStations) {
+        nightLines.closeNode(stops[closedStation]);
+    }
     return nightLines;
 }
 /**
  * @brief parses the lines available during daytime and sets the weight of the edges as distance between node and its destination
  * @return a graph in which each node is a stop
  */
-Graph Parser::parseDayLinesWithDistances() {
+Graph Parser::parseDayLinesWithDistances(vector<string> closedStations) {
     vector<string> lines = readDayLines();
     vector<string> dayStops = readDayStops(lines);
     Graph dayLines(dayStops.size(),true);
@@ -192,13 +201,16 @@ Graph Parser::parseDayLinesWithDistances() {
 
     //adding edges
     addEdges(lines, stops, dayLines);
+    for (auto closedStation: closedStations) {
+        dayLines.closeNode(stops[closedStation]);
+    }
     return dayLines;
 }
 /**
  * @brief parses the lines available during the night and sets the weight of the edges as distance between node and its destination
  * @return a graph in which each node is a stop
  */
-Graph Parser::parseNightLinesWithDistances() {
+Graph Parser::parseNightLinesWithDistances(vector<string> closedStations) {
     vector<string> lines = readNightLines();
     vector<string> nightStops = readNightStops(lines);
     Graph nightLines(nightStops.size(),true);
@@ -206,6 +218,9 @@ Graph Parser::parseNightLinesWithDistances() {
 
     //adding edges
     addEdges(lines, stops, nightLines);
+    for (auto closedStation: closedStations) {
+        nightLines.closeNode(stops[closedStation]);
+    }
     return nightLines;
 }
 /**

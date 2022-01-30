@@ -15,10 +15,10 @@ public:
     vector<string> readNightLines();
     vector<string> readDayStops(vector<string> dayLinesList);
     vector<string> readNightStops(vector<string> nightLinesList);
-    Graph parseDayLines();
-    Graph parseNightLines();
-    Graph parseDayLinesWithDistances();
-    Graph parseNightLinesWithDistances();
+    Graph parseDayLines(vector<string> closedStations);
+    Graph parseNightLines(vector<string> closedStations);
+    Graph parseDayLinesWithDistances(vector<string> closedStations);
+    Graph parseNightLinesWithDistances(vector<string> closedStations);
     map<string, pair<double, double>> readStopsPos(vector<string> stops);
 };
 
