@@ -2,6 +2,9 @@
 #define AED_PARSER_H
 
 #include "graph.h"
+#include <map>
+#include <cmath>
+#include <algorithm>
 
 class Parser {
 private:

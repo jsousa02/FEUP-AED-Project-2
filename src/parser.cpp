@@ -1,7 +1,3 @@
-#include <map>
-#include <cmath>
-#include <algorithm>
-
 #include "../include/parser.h"
 
 /**
@@ -28,6 +24,7 @@ double Parser::haversine(double lat1, double lon1, double lat2, double lon2) {
     double c = 2 * asin(sqrt(a));
     return rad * c;
 }
+
 /**
  * @brief find code of Lines that work during daytime from "Lines" file
  * @return list with code of those Lines that work during daytime
@@ -45,6 +42,7 @@ vector<string> Parser::readDayLines() {
     }
     return dayLines;
 }
+
 /**
  * @brief find Lines that work at nighttime from file
  * @return list with code of those Lines that work at nighttime
@@ -62,6 +60,7 @@ vector<string> Parser::readNightLines() {
     }
     return nightLines;
 }
+
 /**
  * @brief find Stops that work during daytime from file
  * @param dayLinesList vector of code of Lines
@@ -87,6 +86,7 @@ vector<string> Parser::readDayStops(vector<string> dayLinesList) {
     }
     return dayStops;
 }
+
 /**
  * @brief find Stops that work at nighttime from file
  * @param dayLinesList vector of code of Lines
@@ -112,6 +112,7 @@ vector<string> Parser::readNightStops(vector<string> nightLinesList) {
     }
     return nightStops;
 }
+
 /**
  * @brief maps Stops code to an unique integer value
  * @param stopsVec vector of stops
@@ -126,8 +127,10 @@ map<string, int> Parser::mapStopToInt(vector<string> stopsVec) {
     }
     return stops;
 }
+
 /**
  * @brief parses the lines available during daytime and sets the weight of the edges as 1
+ * @param closedStations vector that contains Code of closed stations
  * @return a graph in which each node is a stop
  */
 Graph Parser::parseDayLines(vector<string> closedStations) {
@@ -158,8 +161,10 @@ Graph Parser::parseDayLines(vector<string> closedStations) {
 
     return dayLines;
 }
+
 /**
  * @brief parses the lines available during the night and sets the weight of the edges as 1
+ * @param closedStations vector that contains Code of closed stations
  * @return a graph in which each node is a stop
  */
 Graph Parser::parseNightLines(vector<string> closedStations) {
@@ -189,8 +194,10 @@ Graph Parser::parseNightLines(vector<string> closedStations) {
     }
     return nightLines;
 }
+
 /**
  * @brief parses the lines available during daytime and sets the weight of the edges as distance between node and its destination
+ * @param closedStations vector that contains Code of closed stations
  * @return a graph in which each node is a stop
  */
 Graph Parser::parseDayLinesWithDistances(vector<string> closedStations) {
@@ -206,8 +213,10 @@ Graph Parser::parseDayLinesWithDistances(vector<string> closedStations) {
     }
     return dayLines;
 }
+
 /**
  * @brief parses the lines available during the night and sets the weight of the edges as distance between node and its destination
+ * @param closedStations vector that contains Code of closed stations
  * @return a graph in which each node is a stop
  */
 Graph Parser::parseNightLinesWithDistances(vector<string> closedStations) {
@@ -223,6 +232,7 @@ Graph Parser::parseNightLinesWithDistances(vector<string> closedStations) {
     }
     return nightLines;
 }
+
 /**
  * @brief adds edges to nodes of graph
  * @param lines vector that contains code of line
@@ -254,6 +264,7 @@ void Parser::addEdges(vector<string> lines, map<string, int> stops, Graph &graph
         }
     }
 }
+
 /**
  * @brief reads coordinates from stops file
  * @param code code of stop to find coordinate
@@ -280,6 +291,7 @@ pair<double, double> Parser::pos(string code) {
     }
     return res;
 }
+
 /**
  * @brief maps Station Codes to corresponding pairs of latitude and longitude
  * @param stopsInLine vector that contains Station Codes
