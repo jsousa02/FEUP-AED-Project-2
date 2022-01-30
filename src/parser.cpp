@@ -64,7 +64,7 @@ vector<string> Parser::readNightLines() {
 }
 /**
  * @brief find Stops that work during daytime from file
- * @param dayLinesList list of code of Lines
+ * @param dayLinesList vector of code of Lines
  * @return list with codes of those stops that work during daytime
  */
 vector<string> Parser::readDayStops(vector<string> dayLinesList) {
@@ -89,7 +89,7 @@ vector<string> Parser::readDayStops(vector<string> dayLinesList) {
 }
 /**
  * @brief find Stops that work at nighttime from file
- * @param dayLinesList list of code of Lines
+ * @param dayLinesList vector of code of Lines
  * @return list with codes of those stops that work at nighttime
  */
 vector<string> Parser::readNightStops(vector<string> nightLinesList) {
@@ -114,7 +114,7 @@ vector<string> Parser::readNightStops(vector<string> nightLinesList) {
 }
 /**
  * @brief maps Stops code to an unique integer value
- * @param stopsVec list of stops
+ * @param stopsVec vector of stops
  * @return mapped Stops
  */
 map<string, int> Parser::mapStopToInt(vector<string> stopsVec) {
@@ -210,7 +210,7 @@ Graph Parser::parseNightLinesWithDistances() {
 }
 /**
  * @brief adds edges to nodes of graph
- * @param lines list that contains code of line
+ * @param lines vector that contains code of line
  * @param stops map that has unique integer value (node's number) for each stop
  * @param graph where edges will be added
  */
@@ -265,7 +265,11 @@ pair<double, double> Parser::pos(string code) {
     }
     return res;
 }
-
+/**
+ * @brief maps Station Codes to corresponding pairs of latitude and longitude
+ * @param stopsInLine vector that contains Station Codes
+ * @return map with Station Codes as keys and coordinate pairs as values
+ */
 map<string, pair<double, double>> Parser::readStopsPos(vector<string> stopsInLine) {
     map<string, pair<double, double>> result;
     for (auto stop: stopsInLine) {
