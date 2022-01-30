@@ -180,19 +180,6 @@ void Menu::callResults() {
     int distInt = -2;
     double distDouble = -2;
 
-    if(from == "Place") {
-        pair <string, double> closestStation = findClosestStation(fromLatitude, fromLongitude);
-        fromStation = stops[closestStation.first];
-        cout << "You have to walk " << closestStation.second <<
-        "km to " << closestStation.first << "." << endl;
-    }
-    if(to == "Place") {
-        pair <string, double> closestStation = findClosestStation(toLatitude, toLongitude);
-        toStation = stops[closestStation.first];
-        cout << "After exiting at " << closestStation.first << " you have to walk " <<
-        closestStation.second << "km to the desired location." << endl;
-    }
-
     switch (caseCode) {
         case 0:
             graph = parser.parseDayLines();
@@ -233,6 +220,19 @@ void Menu::callResults() {
     }
     if (distInt == -1 || distDouble == -1.0 ) {
         cout << "No path found between given stations." << endl;
+    } else {
+        if(from == "Place") {
+            pair <string, double> closestStation = findClosestStation(fromLatitude, fromLongitude);
+            fromStation = stops[closestStation.first];
+            cout << "You have to walk " << closestStation.second <<
+                 "km to " << closestStation.first << "." << endl;
+        }
+        if(to == "Place") {
+            pair <string, double> closestStation = findClosestStation(toLatitude, toLongitude);
+            toStation = stops[closestStation.first];
+            cout << "After exiting at " << closestStation.first << " you have to walk " <<
+                 closestStation.second << "km to the desired location." << endl;
+        }
     }
     if (!path.empty()) printPath (path);
 }
