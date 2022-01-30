@@ -11,7 +11,7 @@ add_executable(aed
         src/graph.cpp
         main.cpp
         include/parser.h
-        src/parser.cpp)
+        src/parser.cpp src/menu.cpp include/menu.h)
 
 # Doxygen Build
 find_package(Doxygen)

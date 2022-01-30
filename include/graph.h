@@ -29,7 +29,6 @@ class Graph {
         bool visited;
         double dist;
         int lineCounter;
-        string predLine;
     };
 
     int n;              // Graph size (vertices are numbered from 1 to n)

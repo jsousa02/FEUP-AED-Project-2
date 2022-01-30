@@ -205,11 +205,11 @@ list<int> Graph::bfs_path(int a, int b) {
 
 void Graph::dijkstraLessLine(int s) {
     MinHeap<int, int> q(n, -1);
+    vector<string> lines;
     for (int v=1; v<=n; v++) {
         nodes.at(v).dist = INF;
         q.insert(v, INF);
         nodes.at(v).visited = false;
-        nodes.at(v).predLine = "";
         nodes.at(v).lineCounter = 0;
     }
 
@@ -225,15 +225,9 @@ void Graph::dijkstraLessLine(int s) {
             double v = e.dest;
             double w = e.weight;
             string l = e.line;
-            if (!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
-                nodes.at(v).dist = nodes.at(u).dist + w;
+            if (!nodes.at(v).visited){
                 q.decreaseKey(v, nodes.at(v).dist);
                 nodes.at(v).pred = u;
-            }
-
-            if(nodes.at(u).predLine != e.line){
-                nodes.at(v).lineCounter++;
-                nodes.at(v).predLine = e.line;
             }
         }
     }
