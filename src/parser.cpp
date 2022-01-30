@@ -30,7 +30,10 @@ double Parser::haversine(double lat1, double lon1, double lat2, double lon2) {
     double c = 2 * asin(sqrt(a));
     return rad * c;
 }
-
+/**
+ * @brief find code of Lines that work during daytime from "Lines" file
+ * @return list with code of those Lines that work during daytime
+ */
 vector<string> Parser::readDayLines() {
     ifstream file("dataset/lines.csv");
 
@@ -44,7 +47,10 @@ vector<string> Parser::readDayLines() {
     }
     return dayLines;
 }
-
+/**
+ * @brief find Lines that work at nighttime from file
+ * @return list with code of those Lines that work at nighttime
+ */
 vector<string> Parser::readNightLines() {
     ifstream file("dataset/lines.csv");
 
@@ -58,7 +64,11 @@ vector<string> Parser::readNightLines() {
     }
     return nightLines;
 }
-
+/**
+ * @brief find Stops that work during daytime from file
+ * @param dayLinesList list of code of Lines
+ * @return list with codes of those stops that work during daytime
+ */
 vector<string> Parser::readDayStops(vector<string> dayLinesList) {
     vector<string> dayStops;
     for (auto line: dayLinesList){
@@ -79,7 +89,11 @@ vector<string> Parser::readDayStops(vector<string> dayLinesList) {
     }
     return dayStops;
 }
-
+/**
+ * @brief find Stops that work at nighttime from file
+ * @param dayLinesList list of code of Lines
+ * @return list with codes of those stops that work at nighttime
+ */
 vector<string> Parser::readNightStops(vector<string> nightLinesList) {
     vector<string> nightStops;
     for (auto line: nightLinesList){
@@ -100,7 +114,11 @@ vector<string> Parser::readNightStops(vector<string> nightLinesList) {
     }
     return nightStops;
 }
-
+/**
+ * @brief maps Stops code to an unique integer value
+ * @param stopsVec list of stops
+ * @return mapped Stops
+ */
 map<string, int> Parser::mapStopToInt(vector<string> stopsVec) {
     map<string, int> stops;
     int pos = 1;
@@ -110,7 +128,10 @@ map<string, int> Parser::mapStopToInt(vector<string> stopsVec) {
     }
     return stops;
 }
-
+/**
+ * @brief parses the lines available during daytime and sets the weight of the edges as 1
+ * @return a graph in which each node is a stop
+ */
 Graph Parser::parseDayLines() {
     vector<string> lines = readDayLines();
     vector<string> dayStops = readDayStops(lines);
@@ -134,7 +155,10 @@ Graph Parser::parseDayLines() {
     }
     return dayLines;
 }
-
+/**
+ * @brief parses the lines available during the night and sets the weight of the edges as 1
+ * @return a graph in which each node is a stop
+ */
 Graph Parser::parseNightLines() {
     vector<string> lines = readNightLines();
     vector<string> nightStops = readNightStops(lines);
@@ -158,7 +182,10 @@ Graph Parser::parseNightLines() {
     }
     return nightLines;
 }
-
+/**
+ * @brief parses the lines available during daytime and sets the weight of the edges as distance between node and its destination
+ * @return a graph in which each node is a stop
+ */
 Graph Parser::parseDayLinesWithDistances() {
     vector<string> lines = readDayLines();
     vector<string> dayStops = readDayStops(lines);
@@ -169,7 +196,10 @@ Graph Parser::parseDayLinesWithDistances() {
     addEdges(lines, stops, dayLines);
     return dayLines;
 }
-
+/**
+ * @brief parses the lines available during the night and sets the weight of the edges as distance between node and its destination
+ * @return a graph in which each node is a stop
+ */
 Graph Parser::parseNightLinesWithDistances() {
     vector<string> lines = readNightLines();
     vector<string> nightStops = readNightStops(lines);
@@ -180,7 +210,12 @@ Graph Parser::parseNightLinesWithDistances() {
     addEdges(lines, stops, nightLines);
     return nightLines;
 }
-
+/**
+ * @brief adds edges to nodes of graph
+ * @param lines list that contains code of line
+ * @param stops map that has unique integer value (node's number) for each stop
+ * @param graph where edges will be added
+ */
 void Parser::addEdges(vector<string> lines, map<string, int> stops, Graph &graph) {
     for (auto line: lines) {
         for (int i = 0; i < 2; i++) {
@@ -206,7 +241,11 @@ void Parser::addEdges(vector<string> lines, map<string, int> stops, Graph &graph
         }
     }
 }
-
+/**
+ * @brief reads coordinates from stops file
+ * @param code code of stop to find coordinate
+ * @return pair formed by: latitude, longitude
+ */
 pair<double, double> Parser::pos(string code) {
     pair<double, double> res;
     string line;

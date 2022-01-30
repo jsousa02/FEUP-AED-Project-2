@@ -26,7 +26,10 @@ int Menu::intInput(int min, int max) {
     } while (!validInput);
     return output;
 }
-
+/**
+ * @brief ask for station and checks if input station exists
+ * @return station's node number
+ */
 int Menu::stationInput() {
     string input;
     int inputCode; // 0 means input ok, 1 means input not in station code format, 2 means station not found;
@@ -44,7 +47,10 @@ int Menu::stationInput() {
     } while (inputCode != 0);
     return output;
 }
-
+/**
+ * @brief ask for coordinate
+ * @return
+ */
 double Menu::coordinatesInput() {
     string input;
     double output;
