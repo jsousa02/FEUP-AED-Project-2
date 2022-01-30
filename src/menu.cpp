@@ -2,12 +2,6 @@
 
 Menu::Menu() = default;
 
-/**
- * @brief asks for an input and checks if it's an integer between the given min and max values (inclusively)
- * @param min lower limit of check interval
- * @param max upper limit of check interval
- * @return the valid input
- */
 int Menu::intInput(int min, int max) {
     string input;
     bool validInput;
@@ -28,7 +22,7 @@ int Menu::intInput(int min, int max) {
     return output;
 }
 /**
- * @brief ask for station and checks if input is a station code and the station exists
+ * @brief ask for station and checks if input station exists
  * @return station's node number
  */
 int Menu::stationInput() {
@@ -49,8 +43,8 @@ int Menu::stationInput() {
     return output;
 }
 /**
- * @brief ask for coordinate, checks if it's a valid double
- * @return the valid coordinate
+ * @brief ask for coordinate
+ * @return
  */
 double Menu::coordinatesInput() {
     string input;
@@ -69,12 +63,6 @@ double Menu::coordinatesInput() {
     return output;
 }
 
-/**
- * @brief queries the user a text and asks for an option between given options
- * @param text the query text
- * @param options vector containing each option
- * @return the selected option
- */
 string Menu::query(string text, vector<string> options) {
     cout << text << endl;
     for (int i = 1; i <= options.size(); i++) {
@@ -83,10 +71,6 @@ string Menu::query(string text, vector<string> options) {
     return options[intInput(0, options.size())-1];
 }
 
-/**
- * @brief collects from the user in a user-friendly manner needed data to perform
- * the best route for the user print the resulting route with details
- */
 void Menu::run() {
     fromStation = -1;
     toStation = -1;
@@ -146,11 +130,6 @@ void Menu::run() {
     callResults();
 }
 
-/**
- * @brief maps the station node's number to it's corresponding string code (maps m backwards)
- * @param m a mapping of stations string codes to it's corresponding node number (to be mapped backwards)
- * @return the "m" map mapped backwards
- */
 map<int, string> Menu::getStopName(map<string, int> m) {
     map<int, string> res;
     for(auto x: m) {
@@ -159,10 +138,6 @@ map<int, string> Menu::getStopName(map<string, int> m) {
     return res;
 }
 
-/**
- * @brief prints the path from location until destination
- * @param path a list containing the path's stations
- */
 void Menu::printPath(list<int> path) {
     cout << "You're here -> ";
     for (auto i: path) {
@@ -171,14 +146,23 @@ void Menu::printPath(list<int> path) {
     cout << "Destination." << endl;
 }
 
-/**
- * @brief it calls the result-producing methods, it's called in the run function and depends
- * on Menu's parameters to call the right methods
- */
 void Menu::callResults() {
     list<int> path = {};
     int distInt = -2;
     double distDouble = -2;
+
+    if(from == "Place") {
+        pair <string, double> closestStation = findClosestStation(fromLatitude, fromLongitude);
+        fromStation = stops[closestStation.first];
+        cout << "You have to walk " << closestStation.second <<
+        "km to " << closestStation.first << "." << endl;
+    }
+    if(to == "Place") {
+        pair <string, double> closestStation = findClosestStation(toLatitude, toLongitude);
+        toStation = stops[closestStation.first];
+        cout << "After exiting at " << closestStation.first << " you have to walk " <<
+        closestStation.second << "km to the desired location." << endl;
+    }
 
     switch (caseCode) {
         case 0:
@@ -220,29 +204,10 @@ void Menu::callResults() {
     }
     if (distInt == -1 || distDouble == -1.0 ) {
         cout << "No path found between given stations." << endl;
-    } else {
-        if(from == "Place") {
-            pair <string, double> closestStation = findClosestStation(fromLatitude, fromLongitude);
-            fromStation = stops[closestStation.first];
-            cout << "You have to walk " << closestStation.second <<
-                 "km to " << closestStation.first << "." << endl;
-        }
-        if(to == "Place") {
-            pair <string, double> closestStation = findClosestStation(toLatitude, toLongitude);
-            toStation = stops[closestStation.first];
-            cout << "After exiting at " << closestStation.first << " you have to walk " <<
-                 closestStation.second << "km to the desired location." << endl;
-        }
     }
     if (!path.empty()) printPath (path);
 }
 
-/**
- * @brief looks for the closest station to a given position
- * @param lat latitude of given position
- * @param lon longitude of given position
- * @return a pair containing the closest station's code and its distance to the given position
- */
 pair<string, double> Menu::findClosestStation(double lat, double lon) {
     pair<string, double> closestStation;
     closestStation.second = DBL_MAX;
