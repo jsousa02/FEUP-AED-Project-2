@@ -1,12 +1,9 @@
-//
-// Created by df001 on 2022/1/30.
-//
-
 #ifndef AED_MENU_H
 #define AED_MENU_H
 
 #include <map>
 #include "parser.h"
+#include "float.h"
 
 using namespace std;
 
@@ -14,6 +11,7 @@ class Menu {
     Parser parser;
     map<string, int> stops;
     map<int, string> stopsName;
+    map<string, pair<double, double>> stopsPositions;
 
     string welcome = "Welcome to AEDA Transport assisstant!";
     string stationQuery = "First, where are you? A station or a place?";
@@ -31,6 +29,8 @@ class Menu {
     vector <string> stationOrPlace = {"Station", "Place"};
     vector <string> dayOrNight = {"Day", "Night"};
 
+    Graph graph;
+
     double fromLatitude{};
     double fromLongitude{};
     double toLatitude{};
@@ -41,16 +41,20 @@ class Menu {
     string priority;
     int fromStation{};
     int toStation{};
+    int caseCode{};
 
     string query(string text, vector<string> options);
     map<int, string> getStopName(map<string, int> m);
     void printPath(list<int> path);
+    pair<string, double> findClosestStation(double lat, double lon);
+    double haversine(double lat1, double lon1, double lat2, double lon2);
 public:
     Menu();
     int intInput(int min, int max);
     int stationInput();
     double coordinatesInput();
     void run();
+    void callResults();
 };
 
 

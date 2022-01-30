@@ -1,5 +1,3 @@
-#include <sstream>
-#include <fstream>
 #include <map>
 #include <cmath>
 #include <algorithm>
@@ -266,4 +264,14 @@ pair<double, double> Parser::pos(string code) {
         }
     }
     return res;
+}
+
+map<string, pair<double, double>> Parser::readStopsPos(vector<string> stopsInLine) {
+    map<string, pair<double, double>> result;
+    for (auto stop: stopsInLine) {
+        pair<double,double> position = pos(stop);
+        pair<string, pair <double, double>> toInsert (stop, position);
+        result.insert(toInsert);
+    }
+    return result;
 }

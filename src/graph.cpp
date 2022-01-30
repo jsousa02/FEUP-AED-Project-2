@@ -7,6 +7,9 @@
 // Constructor: nr nodes and direction (default: undirected)
 Graph::Graph(int num, bool dir) : n(num), hasDir(dir), nodes(num + 1) {}
 
+// Constructor: default
+Graph::Graph() = default;
+
 /**
  * @brief adds an edge connecting the src node to the dest node with a given weight
  * @param src the source node
@@ -59,7 +62,7 @@ void Graph::dijkstra(int s) {
  */
 double Graph::dijkstra_distance(int a, int b) {
     dijkstra(a);
-    if(nodes.at(b).dist == INF) return -1;
+    if(nodes.at(b).dist == INF) return -1.0;
     return nodes.at(b).dist;
 }
 
@@ -72,7 +75,7 @@ double Graph::dijkstra_distance(int a, int b) {
 list<int> Graph::dijkstra_path(int a, int b) {
     dijkstra(a);
     list<int> path;
-    if (dijkstra_distance(a,b) == -1) return path;
+    if (dijkstra_distance(a,b) == -1.0) return path;
     path.push_front(b);
     int i = b;
     while( i != a) {
@@ -122,68 +125,6 @@ int Graph::bfs_distance(int a, int b) {
     return nodes[b].dist;
 }
 
-/**
- * @brief finds closest stops to a point given a maximum distance
- * @param lat the latitude of the point
- * @param lon the longitude of the point
- * @param dist the maximum distance to the point
- * @return a vector with all the stops that are closer to the point
- */
-vector<string> Graph::findClosestStop(double lat, double lon, double dist) {
-    ifstream stopsFile("./dataset/stops.csv");
-
-    string firstLine, line, stopCode, stopName;
-    int count = 0;
-    double lat2, lon2, distance;
-    vector<string> closestStops;
-
-    getline(stopsFile, firstLine);
-
-    while(getline(stopsFile, line)) {
-        stringstream ss(line);
-        while(getline(ss, line, ',')) {
-            if(count == 0)
-                stopCode = line;
-            else if(count == 1)
-                stopName = line;
-            else if(count == 3)
-                lat2 = stod(line);
-            else if(count == 4)
-                lon2 = stod(line);
-            count++;
-        }
-        count = 0;
-        distance = haversine(lat, lon, lat2, lon2);
-        if(distance <= dist)
-            closestStops.push_back(stopCode);
-    }
-    return closestStops;
-}
-
-/**
- * @brief calculates the distance in kilometers between 2 points given their coordinates
- * @param lat1 the latitude of the first point
- * @param lon1 the longitude of the first point
- * @param lat2 the latitude of the second point
- * @param lon2 the longitude of the second point
- * @return the distance between the 2 points
- */
-double Graph::haversine(double lat1, double lon1, double lat2, double lon2) {
-    double dLat = (lat2 - lat1) * M_PI / 180.0;
-    double dLon = (lon2 - lon1) * M_PI / 180.0;
-
-    // convert to radians
-    lat1 = (lat1) * M_PI / 180.0;
-    lat2 = (lat2) * M_PI / 180.0;
-
-    // apply formula
-    double a = pow(sin(dLat / 2), 2) +
-               pow(sin(dLon / 2), 2) *
-               cos(lat1) * cos(lat2);
-    double rad = 6371;
-    double c = 2 * asin(sqrt(a));
-    return rad * c;
-}
 /**
  * @brief calculates the path from a starting node to a destination node
  * @param a the starting node

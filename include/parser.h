@@ -19,7 +19,7 @@ public:
     Graph parseNightLines();
     Graph parseDayLinesWithDistances();
     Graph parseNightLinesWithDistances();
-
+    map<string, pair<double, double>> readStopsPos(vector<string> stops);
 };
 
 

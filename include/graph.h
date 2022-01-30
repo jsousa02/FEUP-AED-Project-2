@@ -36,14 +36,13 @@ class Graph {
     vector<Node> nodes;
     void dijkstra(int s);
     void bfs(int v);
-    double haversine(double lat1, double lon1, double lat2, double lon2);
 public:
+    Graph();
     // Constructor: nr nodes and direction (default: undirected)
     Graph(int nodes, bool dir = false);
     void addEdge(int src, int dest, string line, double weight = 1.0);
     double dijkstra_distance(int a, int b);
     int bfs_distance(int a, int b);
-    vector<string> findClosestStop(double lat, double lon, double dist);
     list<int> dijkstra_path(int a, int b);
     list<int> bfs_path(int a, int b);
 };
