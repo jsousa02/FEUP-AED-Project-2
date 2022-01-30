@@ -166,7 +166,7 @@ void Menu::callResults() {
 
     switch (caseCode) {
         case 0:
-            graph = parser.parseDayLines();
+            graph = parser.parseDayLines(closedStations);
             distInt = graph.bfs_distance(fromStation, toStation);
             if (distInt > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]
@@ -175,7 +175,7 @@ void Menu::callResults() {
             path = graph.bfs_path(fromStation, toStation);
             break;
         case 1:
-            graph = parser.parseDayLinesWithDistances();
+            graph = parser.parseDayLinesWithDistances(closedStations);
             distDouble = graph.dijkstra_distance(fromStation, toStation);
             if (distDouble > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]
@@ -184,7 +184,7 @@ void Menu::callResults() {
             path = graph.dijkstra_path(fromStation, toStation);
             break;
         case 2:
-            graph = parser.parseNightLines();
+            graph = parser.parseNightLines(closedStations);
             distInt = graph.bfs_distance(fromStation, toStation);
             if (distInt > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]
@@ -193,7 +193,7 @@ void Menu::callResults() {
             path = graph.bfs_path(fromStation, toStation);
             break;
         case 3:
-            graph = parser.parseNightLinesWithDistances();
+            graph = parser.parseNightLinesWithDistances(closedStations);
             distDouble = graph.dijkstra_distance(fromStation, toStation);
             if (distDouble > 0) {
                 cout << "From " << stopsName[fromStation] << " to " << stopsName[toStation]

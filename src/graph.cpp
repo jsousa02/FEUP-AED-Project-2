@@ -43,12 +43,15 @@ void Graph::dijkstra(int s) {
         // cout << "Node " << u << " with dist = " << nodes[u].dist << endl;
         nodes.at(u).visited = true;
         for (auto e : nodes.at(u).adj) {
-            double v = e.dest;
-            double w = e.weight;
-            if (!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
-                nodes.at(v).dist = nodes.at(u).dist + w;
-                q.decreaseKey(v, nodes.at(v).dist);
-                nodes.at(v).pred = u;
+            if (nodes.at(u).isOpen){
+                double v = e.dest;
+                double w = e.weight;
+
+                if (!nodes.at(v).visited && nodes.at(u).dist + w < nodes.at(v).dist) {
+                    nodes.at(v).dist = nodes.at(u).dist + w;
+                    q.decreaseKey(v, nodes.at(v).dist);
+                    nodes.at(v).pred = u;
+                }
             }
         }
     }
@@ -142,4 +145,8 @@ list<int> Graph::bfs_path(int a, int b) {
         path.push_front(i);
     }
     return path;
+}
+
+void Graph::closeNode(int a) {
+    nodes.at(a).isOpen = false;
 }

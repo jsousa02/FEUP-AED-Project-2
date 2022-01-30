@@ -28,6 +28,7 @@ class Menu {
     vector <string> priorities = {"Lesser stops", "Lesser route distance"};
     vector <string> stationOrPlace = {"Station", "Place"};
     vector <string> dayOrNight = {"Day", "Night"};
+    vector <string> closedStations;
 
     Graph graph;
 
