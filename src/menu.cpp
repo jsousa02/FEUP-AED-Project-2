@@ -127,23 +127,23 @@ void Menu::run() {
         this->stopsPositions = parser.readStopsPos(nightStops);
         this->stopsName = getStopName(stops);
     }
+
+    from = query(stationQuery, stationOrPlace);
+    if (from == "Station") {
+        cout << whichStation << endl;
+        fromStation = stationInput().first;
+    } else {
+        cout << coordinatesQuery << endl;
+        cout << latitudeQuery << endl;
+        fromLatitude = coordinatesInput();
+        cout << longitudeQuery << endl;
+        fromLongitude = coordinatesInput();
+    }
     cout << "Select an option\n"
             "1 - Search route\n"
-            "2 - have a shitton of fun\n";
+            "2 - See the shortest distance to go through all stations from a starting point\n";
     option = intInput(1, 2);
     if (option == 1) {
-        from = query(stationQuery, stationOrPlace);
-        if (from == "Station") {
-            cout << whichStation << endl;
-            fromStation = stationInput().first;
-        } else {
-            cout << coordinatesQuery << endl;
-            cout << latitudeQuery << endl;
-            fromLatitude = coordinatesInput();
-            cout << longitudeQuery << endl;
-            fromLongitude = coordinatesInput();
-        }
-
         to = query(stationQuery2, stationOrPlace);
         if (to == "Station") {
             cout << whichStation << endl;
@@ -171,7 +171,25 @@ void Menu::run() {
         closeStationQuery();
         callResults();
     } else {
-        // MST HERE
+        closedStations.clear();
+        string station;
+        if(from == "Place") {
+            pair <string, double> closestStation = findClosestStation(fromLatitude, fromLongitude);
+            fromStation = stops[closestStation.first];
+            station = closestStation.first;
+            cout << "You have to walk " << closestStation.second <<
+                 "km to " << closestStation.first << "." << endl;
+        } else {
+            station = stopsName[fromStation];
+        }
+        if (time == "Day") {
+            graph = parser.parseDayLinesWithDistances(closedStations);
+        } else {
+            graph = parser.parseNightLinesWithDistances(closedStations);
+        }
+        cout << "Starting at station " <<
+        station << " you would go through " << graph.mst_distance(fromStation) <<
+        "km to go across all stations." << endl;
     }
 }
 
