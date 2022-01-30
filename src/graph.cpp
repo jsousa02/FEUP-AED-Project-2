@@ -143,3 +143,38 @@ list<int> Graph::bfs_path(int a, int b) {
     }
     return path;
 }
+
+void Graph::mst(int s) {
+    MinHeap<int, double> q(n, -1);
+
+    for(int i = 0; i < nodes.size(); i++) {
+        nodes.at(i).dist = INF;
+        nodes.at(i).pred = NULL;
+        q.insert(i, nodes.at(i).dist);
+    }
+    nodes.at(s).dist = 0;
+    q.decreaseKey(s, nodes.at(s).dist);
+
+    while(q.getSize() != 0) {
+        int u = q.removeMin();
+        for(auto e: nodes.at(u).adj) {
+            double v = e.dest;
+            double w = e.weight;
+            if (!nodes.at(v).visited && w < nodes.at(v).dist) {
+                nodes.at(v).dist = w;
+                q.decreaseKey(v, nodes.at(v).dist);
+                nodes.at(v).pred = u;
+            }
+        }
+    }
+}
+
+double Graph::mst_distance(int a, int b) {
+    mst(a);
+    double sum = 0;
+    for(Node node: nodes) {
+        if(node.dist != INF)
+            sum += node.dist;
+    }
+    return sum;
+}
