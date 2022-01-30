@@ -57,7 +57,6 @@ class Menu {
     double haversine(double lat1, double lon1, double lat2, double lon2);
 public:
     Menu();
-    void start();
     void closeStationQuery();
     int intInput(int min, int max);
     pair<int, string> stationInput();

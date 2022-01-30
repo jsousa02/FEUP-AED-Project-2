@@ -128,7 +128,14 @@ map<string, int> Parser::mapStopToInt(vector<string> stopsVec) {
 }
 /**
  * @brief parses the lines available during daytime and sets the weight of the edges as 1
+ * @clo
  * @return a graph in which each node is a stop
+ */
+
+/**
+ * @brief parses the lines available during daytime and sets the weight of the edges as 1
+ * @param closedStations
+ * @return
  */
 Graph Parser::parseDayLines(vector<string> closedStations) {
     vector<string> lines = readDayLines();

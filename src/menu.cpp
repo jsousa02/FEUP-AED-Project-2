@@ -2,6 +2,12 @@
 
 Menu::Menu() = default;
 
+/**
+ * @brief asks for an integer input between the given options and validates it. repeats if invalid
+ * @param min lower limit of interval
+ * @param max upper limit of interval
+ * @return return the validated int
+ */
 int Menu::intInput(int min, int max) {
     string input;
     bool validInput;
@@ -22,8 +28,8 @@ int Menu::intInput(int min, int max) {
     return output;
 }
 /**
- * @brief ask for station and checks if input station exists
- * @return station's node number
+ * @brief ask for station and checks if input string is a station code that exist
+ * @return the validated station's node number
  */
 pair<int, string> Menu::stationInput() {
     string input;
@@ -46,8 +52,8 @@ pair<int, string> Menu::stationInput() {
     return output;
 }
 /**
- * @brief ask for coordinate
- * @return
+ * @brief ask for coordinate and validate that it's a double
+ * @return the validated double
  */
 double Menu::coordinatesInput() {
     string input;
@@ -66,6 +72,12 @@ double Menu::coordinatesInput() {
     return output;
 }
 
+/**
+ * @brief queries the user for an option between the given ones
+ * @param text the query text
+ * @param options a vector containing each option
+ * @return the string corresponding to the selected option
+ */
 string Menu::query(string text, vector<string> options) {
     cout << text << endl;
     for (int i = 1; i <= options.size(); i++) {
@@ -74,23 +86,9 @@ string Menu::query(string text, vector<string> options) {
     return options[intInput(0, options.size())-1];
 }
 
-void Menu::start() {
-
-    int option;
-    do {
-        cout << startingMenuString;
-        option = intInput(1,2);
-        switch (option) {
-            case 1:
-                closeStationQuery();
-                break;
-            case 2:
-                run();
-                break;
-        }
-    } while (option != 2);
-}
-
+/**
+ * @brief asks the user, until he says he is finished, whether he wants to close another station or finish
+ */
 void Menu::closeStationQuery() {
     int option;
     closedStations.clear();
@@ -108,7 +106,10 @@ void Menu::closeStationQuery() {
         } while (option == 1);
     }
 }
-
+/**
+ * @brief run the menu, collecting information needed for the user to perform the desired action
+ * which can be the calculation of a mst distance or a desired search route
+ */
 void Menu::run() {
     fromStation = -1;
     toStation = -1;
@@ -193,6 +194,11 @@ void Menu::run() {
     }
 }
 
+/**
+ * @brief maps the m map backwards
+ * @param m map to be mapped backwards
+ * @return the resulting map (backwards m)
+ */
 map<int, string> Menu::getStopName(map<string, int> m) {
     map<int, string> res;
     for(auto x: m) {
@@ -201,6 +207,10 @@ map<int, string> Menu::getStopName(map<string, int> m) {
     return res;
 }
 
+/**
+ * @brief prints a pathway from where you are through the given path
+ * @param path given path to be printed
+ */
 void Menu::printPath(list<int> path) {
     cout << "You're here -> ";
     for (auto i: path) {
@@ -209,6 +219,9 @@ void Menu::printPath(list<int> path) {
     cout << "Destination." << endl;
 }
 
+/**
+ * @brief do the calculations corresponding to the user's options and shows the resulting searched route
+ */
 void Menu::callResults() {
     list<int> path = {};
     int distInt = -2;
@@ -271,6 +284,12 @@ void Menu::callResults() {
     if (!path.empty()) printPath (path);
 }
 
+/**
+ * @brief finds the closest station to a given position
+ * @param lat latitude of the position
+ * @param lon longitude of the position
+ * @return a pair containing the station's code and the distance to the position respectively
+ */
 pair<string, double> Menu::findClosestStation(double lat, double lon) {
     pair<string, double> closestStation;
     closestStation.second = DBL_MAX;

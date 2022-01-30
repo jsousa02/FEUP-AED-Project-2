@@ -181,7 +181,10 @@ double Graph::mst_distance(int a) {
     }
     return sum;
 }
-
+/**
+ * @brief sets node at position "a" isOpen field as false
+ * @param a position of the node to close
+ */
 void Graph::closeNode(int a) {
     nodes.at(a).isOpen = false;
 }
